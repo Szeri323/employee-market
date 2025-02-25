@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css">
+    <script src="./src/script.js" type="module" defer></script>
+    <title>Employee Market</title>
+</head>
+
+<body>
+    <div class="container">
+        <div id="logged-out-view">
+            <button id="sign-in-google-btn" class="btn btn-sign-in-google">
+                <img class="sign-in-icon" src="./src/icons/google-brands.svg" alt="">
+                Zaloguj się z Google
+            </button>
+        </div>
+
+        <div id="logged-in-view">
+            <button id="sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
+            <p>Cześć jesteś zalogowany!</p>
+
+            <div id="employee-data">
+                <!-- Personal data -->
+                <div id="personal-data" class="data-box">
+                    <p>Dane personalne</p>
+                    <input id="input-name" class="input-field" type="text" placeholder="Imię">
+                    <input id="input-surname" class="input-field" type="text" placeholder="Nazwisko">
+                    <input id="input-birth-date" class="input-field" type="date" placeholder="Data urodzenia">
+                    <input id="input-email" class="input-field" type="email" placeholder="Emial">
+                    <input id="input-phone-number" class="input-field" type="number" placeholder="Numer Telefonu">
+                </div>
+
+                <!-- Expiriece -->
+                <div id="expirience-data" class="data-box">
+                    <p>Doświdczenie zawodowe</p>
+                    <input class="input-field" type="text" placeholder="Projekt 1">
+                    <input class="input-field" type="text" placeholder="Projekt 2">
+                    <input class="input-field" type="text" placeholder="Projekt 3">
+                </div>
+
+                <!-- Skills -->
+                <div id="skills-data" class="data-box">
+                    <p>Umiejętności</p>
+                    <input class="input-field" type="text" placeholder="Umiejętność 1">
+                </div>
+
+                <!-- My sites -->
+                <div id="social-links" class="data-box">
+                    <p>Linki do profili użytkownika</p>
+                    <input class="input-field" type="text" placeholder="Link do social mediów 1">
+                </div>
+
+            </div>
+
+
+            <!-- <div class="search">
+                <input class="search-bar" placeholder="Czego szukasz?">
+                <img class="search-icon" src="./src/icons/magnifying-glass-solid.svg" alt="">
+            </div>
+
+            <div class="results"></div> -->
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

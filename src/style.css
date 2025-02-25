@@ -1,0 +1,122 @@
+:root {
+    --accent-clr: #268534;
+    --dark: #333;
+    --white: #fff;
+
+    --ff: "Roboto", sans-serif;
+
+    --fw-bold: 800;
+    --fw-normal: 400;
+
+    --fs-h1: 3rem;
+    --fs-h2: 1.75rem;
+    --fs-h3: 1.125rem;
+
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--ff);
+    font-size: 2rem;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1000px;
+    background-color: #ddd;
+    padding: 1em;
+    text-align: center;
+}
+
+
+
+.btn {
+    position: relative;
+    font-family: "Roboto", sans-serif;
+    height: 60px;
+    font-weight: var(--fw-bold);
+    padding: 1em 2em;
+    background-color: var(--accent-clr);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 3px var(--dark);
+    cursor: pointer;
+    transition: transform 250ms ease-in-out;
+}
+
+.btn:hover {
+    background-color: #1f6e2b;
+    transform: scale(1.1);
+}
+
+/* Logged out view */
+
+.btn-sign-in-google {
+    padding: 10px 10px 10px 60px;
+}
+
+.sign-in-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 45px;
+    width: 45px;
+    color: var(--white);
+}
+
+/* Logged in view */
+
+.search {
+    margin: 0 auto;
+    position: relative;
+    max-width: 300px;
+}
+
+.search-bar {
+    position: relative;
+    width: 100%;
+    padding: 1em 2em 1em 50px;
+    height: 60px;
+}
+
+.search-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 45px;
+    width: 45px;
+}
+
+.data-box {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.input-field {
+    padding: 1em 1em;
+    margin: 1em 0;
+}
+
+input::-webkit-inner-spin-button {
+    display: none;
+}
+
+
+
+#logged-out-view {
+    display: none;
+}
+
+#logged-in-view {
+    /* display: none; */
+}

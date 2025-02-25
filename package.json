@@ -1,0 +1,20 @@
+{
+  "name": "employee-market",
+  "version": "1.0.0",
+  "description": "Employee profile board",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "author": "Szeri",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^11.3.1"
+  },
+  "devDependencies": {
+    "vite": "^6.1.1"
+  }
+}
