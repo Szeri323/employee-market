@@ -35,14 +35,12 @@ body {
     text-align: center;
 }
 
-
-
 .btn {
+    padding: 1em 2em;
+    margin-bottom: 3em;
     position: relative;
     font-family: "Roboto", sans-serif;
-    height: 60px;
     font-weight: var(--fw-bold);
-    padding: 1em 2em;
     background-color: var(--accent-clr);
     color: var(--white);
     border: none;
@@ -61,12 +59,13 @@ body {
 
 .btn-sign-in-google {
     padding: 10px 10px 10px 60px;
+    height: 60px;
 }
 
 .sign-in-icon {
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: 7px;
+    left: 7px;
     height: 45px;
     width: 45px;
     color: var(--white);
@@ -95,11 +94,36 @@ body {
     width: 45px;
 }
 
+.employee-data-container {
+    margin: 1em;
+}
+
+.employee-data-header {
+    display: flex;
+}
+
 .data-box {
     display: flex;
     flex-direction: column;
     width: 400px;
-    margin: 0 auto;
+    margin: 0 auto 2em;
+}
+
+.data-box-avatar {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.experience {
+    margin: .5em 0;
+    display: flex;
+    flex-direction: column;
+    /* border: 3px solid black; */
+}
+
+.btn-add-experience {
+    align-self: center;
 }
 
 .input-field {
@@ -107,11 +131,52 @@ body {
     margin: 1em 0;
 }
 
+.avatar-label {
+    height: 200px;
+    width: 200px;
+    background-color: var(--dark);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+    font-size: 1rem;
+}
+
+.avatar-label img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.input-field-avatar {
+    display: none;
+}
+
 input::-webkit-inner-spin-button {
     display: none;
 }
 
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    /* flex-grow: 1; */
+    gap: 1rem;
+    margin-bottom: 1em;
+}
 
+.skills p {
+    padding: 1em;
+    background-color: #333;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 16px;
+}
+
+.links-container {
+    display: flex;
+    flex-direction: column;
+}
 
 #logged-out-view {
     display: none;
