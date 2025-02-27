@@ -1,8 +1,8 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
 import { clearInputField, clearWitheSpacesInData } from "./custom_functions"
+import { collectionName } from "./script"
 
-const collectionName = "employees"
 
 const employeeForm = document.getElementById("employee-form")
 
@@ -24,7 +24,7 @@ const addExperienceBtn = document.getElementById("add-experience-btn")
 /* Employee skills */
 const inputFieldSkillEl = document.getElementById("input-skill")
 const addSkillBtn = document.getElementById("add-skill-btn")
-const skillsContainer = document.getElementById("skills-container")
+const skillsContainerEl = document.getElementById("skills-container")
 
 /* Employee links */
 const inputFieldLinkEl = document.getElementById("input-link")
@@ -46,6 +46,8 @@ async function addEmployeeDataToDB(db, userId) {
     const employeeRef = collection(db, collectionName)
     const docRef = doc(employeeRef, userId)
 
+    const ImageURL = createURLFromImageFile()
+
     const nameValue = clearWitheSpacesInData(inputFieldNameEl.value)
     const surnameValue = clearWitheSpacesInData(inputFieldSurnameEl.value)
     const birthDateValue = inputFieldBirthDateEl.value
@@ -54,7 +56,7 @@ async function addEmployeeDataToDB(db, userId) {
 
     const experienceArray = createArrayFromExperience()
     const skillsArray = createArrayFromSkills()
-    const ImageURL = createURLFromImageFile()
+    const linksArray = createArrayFromLinks()
 
     await setDoc(docRef, {
         avatar: ImageURL,
@@ -64,48 +66,76 @@ async function addEmployeeDataToDB(db, userId) {
         email: emailValue,
         phoneNumber: phoneNumberValue,
         experience: experienceArray,
-        skills: skillsArray
+        skills: skillsArray,
+        links: linksArray
     })
     console.log("Doc created")
 }
 
-/* Form management */
+/* Filling form form doc */
 
 function fulfillFormFromDoc(docSnapData) {
-    console.log(docSnapData)
 
     setAvatarFromDoc(docSnapData["avatar"])
 
+    setHeaderInputsFromDocSnapData(docSnapData)
 
+    setExperienceInputsFromDocSnapData(docSnapData["experience"])
 
+    setSkillFromDocSnapData(docSnapData["skills"])
 
+    setLinksFromDocSnapData(docSnapData["links"])
 
-
-    // inputFieldAvatarEl.files[0] = 
 }
 
 function setAvatarFromDoc(avatar) {
+    const imageEl = document.createElement("img")
+    const imageSource = avatar.replace("blob:", "")
 
-    fetch(avatar).then((response) => {
-        return response.blob()
-    }).then((myBlob) => {
-        const imageEl = document.createElement("img")
-        const imageSource = URL.createObjectURL(myBlob)
-        imageEl.src = imageSource
+    imageEl.src = imageSource
 
-        avatarLabelEl.textContent = ""
-        avatarLabelEl.appendChild(imageEl)
-    })
-
-    // const imageEl = document.createElement("img")
-    // const imageSource = URL.createObjectURL(avatar)
-
-    // imageEl.src = imageSource
-
-    // avatarLabelEl.textContent = ""
-    // avatarLabelEl.appendChild(imageEl)
+    avatarLabelEl.textContent = ""
+    avatarLabelEl.appendChild(imageEl)
 }
 
+function setHeaderInputsFromDocSnapData(docSnapData) {
+    inputFieldNameEl.value = docSnapData["name"]
+    inputFieldSurnameEl.value = docSnapData["surname"]
+    inputFieldBirthDateEl.value = docSnapData["birthDate"]
+    inputFieldEmailEl.value = docSnapData["email"]
+    inputFieldPhoneNumberEl.value = docSnapData["phoneNumber"]
+}
+
+function setExperienceInputsFromDocSnapData(experience) {
+    for (let i = 1; i < experience.length; i++) {
+        addExperienceToExperienceContainer()
+    }
+
+    for (let i = 0; i < experienceContainer.children.length; i++) {
+        ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"].forEach((e, j) => {
+            experienceContainer.children[i].children[j].value = experience[i][e]
+        })
+    }
+}
+
+function setSkillFromDocSnapData(skills) {
+    for (let el of skills) {
+        const skillEl = createSkillEl(el)
+
+        skillsContainerEl.appendChild(skillEl)
+    }
+}
+
+function setLinksFromDocSnapData(links) {
+    for (let el of links) {
+        const linkContainerEl = createLinkContainerEl(el)
+
+        linksContainerEl.appendChild(linkContainerEl)
+    }
+}
+
+
+/* Form management */
 
 function changeLabelAvatar() {
     const imageEl = document.createElement("img")
@@ -156,27 +186,22 @@ function addSkillToSkillsContainer() {
     if (inputValue) {
         inputValue = clearWitheSpacesInData(inputValue)
 
-        const skillEl = document.createElement("p")
+        const skillEl = createSkillEl(inputValue)
 
-        skillEl.textContent = inputValue
-
-        skillsContainer.appendChild(skillEl)
+        skillsContainerEl.appendChild(skillEl)
 
         clearInputField(inputFieldSkillEl)
     }
 }
 
 function addLinkToLinksContainer() {
-    const inputValue = inputFieldLinkEl.value
+    let inputValue = inputFieldLinkEl.value
 
     if (inputValue) {
-        const linkEl = document.createElement("a")
+        inputValue = clearWitheSpacesInData(inputValue)
+        const linkContainerEl = createLinkContainerEl(inputValue)
 
-        linkEl.href = inputFieldLinkEl.value
-        linkEl.textContent = inputFieldLinkEl.value
-        linkEl.target = "_blank"
-
-        linksContainerEl.appendChild(linkEl)
+        linksContainerEl.appendChild(linkContainerEl)
 
         clearInputField(inputFieldLinkEl)
     }
@@ -207,19 +232,64 @@ function createArrayFromExperience() {
 }
 
 function createArrayFromSkills() {
-    const skillsElsArray = skillsContainer.children
+    const skillElsArray = skillsContainerEl.children
     const skillsArray = []
-    for (let el of skillsElsArray) {
+    for (let el of skillElsArray) {
         skillsArray.push(el.textContent)
     }
     return skillsArray
 }
 
-function createURLFromImageFile() {
-    console.log(inputFieldAvatarEl.files[0])
-    // const ImageURL = URL.createObjectURL(inputFieldAvatarEl.files[0])
-    // if (ImageURL) {
-    //     return ImageURL
-    // }
+function createArrayFromLinks() {
+    const linkElsArray = linksContainerEl.children
+    const linksArray = []
+    for (let el of linkElsArray) {
+        linksArray.push(el.textContent)
+    }
+    return linksArray
 }
 
+function createURLFromImageFile() {
+    // console.log(inputFieldAvatarEl.files[0])
+    const ImageURL = URL.createObjectURL(inputFieldAvatarEl.files[0])
+    if (ImageURL) {
+        return ImageURL
+    }
+}
+
+function createSkillEl(value) {
+    const skillEl = document.createElement("p")
+
+    skillEl.textContent = value
+
+    skillEl.addEventListener("dblclick", (event) => {
+        event.target.remove()
+    })
+
+    return skillEl
+}
+
+function createLinkContainerEl(value) {
+    const linkContainer = document.createElement("div")
+    const linkEl = document.createElement("a")
+    const deleteLinkBtn = document.createElement("input")
+
+    linkContainer.classList.add("link-container")
+
+    linkEl.href = value
+    linkEl.textContent = value
+    linkEl.target = "_blank"
+
+    deleteLinkBtn.classList.add("btn")
+    deleteLinkBtn.classList.add("btn-delete")
+    deleteLinkBtn.type = "button"
+    deleteLinkBtn.value = "X"
+
+    deleteLinkBtn.addEventListener("dblclick", (event) => {
+        event.target.parentElement.remove()
+    })
+
+    linkContainer.appendChild(linkEl)
+    linkContainer.appendChild(deleteLinkBtn)
+    return linkContainer
+}
