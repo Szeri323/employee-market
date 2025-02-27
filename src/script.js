@@ -1,3 +1,5 @@
+export { collectionName, db }
+
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
 import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
@@ -21,7 +23,8 @@ const db = getFirestore(app)
 
 const collectionName = "employees"
 
-const loggedInView = document.getElementById("logged-in-view")
+const loggedInUserView = document.getElementById("logged-in-user-view")
+const loggedInCompanyView = document.getElementById("logged-in-company-view")
 const loggedOutView = document.getElementById("logged-out-view")
 
 const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
@@ -42,12 +45,13 @@ onAuthStateChanged(auth, (user) => {
         // .catch((error) => {
         //     console.error(error.message)
         // })
-        
-        employeeForm.addEventListener("submit", (event) => {
-            event.preventDefault()
-            addEmployeeDataToDB(db, user.uid)
-        })
-        showLoggedInView()
+
+        // employeeForm.addEventListener("submit", (event) => {
+        //     event.preventDefault()
+        //     addEmployeeDataToDB(db, user.uid)
+        // })
+        // showLoggedInUserView()
+        showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()
@@ -89,13 +93,20 @@ async function getDocFromDB(userId) {
 
 /* Custom functions */
 
-function showLoggedInView() {
+function showLoggedInUserView() {
     hideView(loggedOutView)
-    showView(loggedInView)
+    hideView(loggedInCompanyView)
+    showView(loggedInUserView)
+}
+function showLoggedInCompanyView() {
+    hideView(loggedOutView)
+    hideView(loggedInUserView)
+    showView(loggedInCompanyView)
 }
 
 function showLoggedOutView() {
-    hideView(loggedInView)
+    hideView(loggedInUserView)
+    hideView(loggedInCompanyView)
     showView(loggedOutView)
 }
 
