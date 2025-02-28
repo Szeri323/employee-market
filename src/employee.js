@@ -1,8 +1,8 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
 import { clearInputField, clearWitheSpacesInData } from "./custom_functions"
-import { collectionName } from "./script"
 
+const collectionName = "employees"
 
 const employeeForm = document.getElementById("employee-form")
 
