@@ -40,13 +40,6 @@ const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", 
 
 const employeeForm = employeeDOM.form
 
-/* Event listeners */
-addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
-addClick(employeeDOM.experience.addExperienceBtn, addExperienceToExperienceContainer)
-addClick(employeeDOM.skills.addBtn, addElementToContainer.bind(null, employeeDOM.skills, false))
-addClick(employeeDOM.links.addBtn, addElementToContainer.bind(null, employeeDOM.links, true))
-
-
 /* DB operations */
 const addEmployeeDataToDB = async (db, userId) => {
     const employeeRef = collection(db, collectionName)
@@ -277,3 +270,9 @@ const createLinkContainerEl = (value) => {
     linkContainer.appendChild(deleteLinkBtn)
     return linkContainer
 }
+
+/* Event listeners */
+addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
+addClick(employeeDOM.experience.addExperienceBtn, addExperienceToExperienceContainer)
+addClick(employeeDOM.skills.addBtn, addElementToContainer.bind(null, employeeDOM.skills, false))
+addClick(employeeDOM.links.addBtn, addElementToContainer.bind(null, employeeDOM.links, true))
