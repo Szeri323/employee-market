@@ -1,70 +1,76 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
-import { clearInputField, clearWitheSpacesInData } from "./custom_functions"
+import { clearInputField, clearWitheSpacesInData, getAllById, addChange, addClick } from "./custom_functions"
 
 const collectionName = "employees"
 
-const employeeForm = document.getElementById("employee-form")
+const employeeDomElementIds = {
+    form: "employee-form",
+    avatar: {
+        label: "avatar-label",
+        inputField: "input-avatar"
+    },
+    personalData: {
+        inputFieldName: "input-name",
+        inputFieldSurname: "input-surname",
+        inputFieldBirthDate: "input-birth-date",
+        inputFieldEmail: "input-email",
+        inputFieldPhoneNumber: "input-phone-number"
+    },
+    experience: {
+        experienceContainer: "experience-container",
+        addExperienceBtn: "add-experience-btn"
+    },
+    skills: {
+        inputField: "input-skill",
+        addBtn: "add-skill-btn",
+        container: "skills-container"
+    },
+    links: {
+        inputField: "input-link",
+        addBtn: "add-link-btn",
+        container: "links-container"
+    }
+}
 
-/* Employee avatar */
-const avatarLabelEl = document.getElementById("avatar-label")
-const inputFieldAvatarEl = document.getElementById("input-avatar")
+const employeeDOM = getAllById(employeeDomElementIds)
 
-/* Employee personal data*/
-const inputFieldNameEl = document.getElementById("input-name")
-const inputFieldSurnameEl = document.getElementById("input-surname")
-const inputFieldBirthDateEl = document.getElementById("input-birth-date")
-const inputFieldEmailEl = document.getElementById("input-email")
-const inputFieldPhoneNumberEl = document.getElementById("input-phone-number")
+const personalDataNames = ["name", "surname", "birthDate", "email", "phoneNumber"]
+const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"]
 
-/* Employee experience */
-const experienceContainer = document.getElementById("experience-container")
-const addExperienceBtn = document.getElementById("add-experience-btn")
-
-/* Employee skills */
-const inputFieldSkillEl = document.getElementById("input-skill")
-const addSkillBtn = document.getElementById("add-skill-btn")
-const skillsContainerEl = document.getElementById("skills-container")
-
-/* Employee links */
-const inputFieldLinkEl = document.getElementById("input-link")
-const addLinkBtn = document.getElementById("add-link-btn")
-const linksContainerEl = document.getElementById("links-container")
-
-// const saveEmployeeDataBtn = document.getElementById("save-employee-data-btn")
-
+const employeeForm = employeeDOM.form
 
 /* Event listeners */
-inputFieldAvatarEl.addEventListener("change", changeLabelAvatar)
-addExperienceBtn.addEventListener("click", addExperienceToExperienceContainer)
-addSkillBtn.addEventListener("click", addSkillToSkillsContainer)
-addLinkBtn.addEventListener("click", addLinkToLinksContainer)
+addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
+addClick(employeeDOM.experience.addExperienceBtn, addExperienceToExperienceContainer)
+addClick(employeeDOM.skills.addBtn, addElementToContainer.bind(null, employeeDOM.skills, false))
+addClick(employeeDOM.links.addBtn, addElementToContainer.bind(null, employeeDOM.links, true))
 
 
 /* DB operations */
-async function addEmployeeDataToDB(db, userId) {
+const addEmployeeDataToDB = async (db, userId) => {
     const employeeRef = collection(db, collectionName)
     const docRef = doc(employeeRef, userId)
 
     const ImageURL = createURLFromImageFile()
 
-    const nameValue = clearWitheSpacesInData(inputFieldNameEl.value)
-    const surnameValue = clearWitheSpacesInData(inputFieldSurnameEl.value)
-    const birthDateValue = inputFieldBirthDateEl.value
-    const emailValue = clearWitheSpacesInData(inputFieldEmailEl.value)
-    const phoneNumberValue = clearWitheSpacesInData(inputFieldPhoneNumberEl.value)
+    const results = {}
+    const personalData = employeeDOM.personalData
+
+    Object.keys(personalData).forEach((key, i) => {
+        const itemName = personalDataNames[i]
+        const value = personalData[key].value
+        results[itemName] = itemName == "birthDate" ? value : clearWitheSpacesInData(value)
+    })
 
     const experienceArray = createArrayFromExperience()
+    console.log(experienceArray)
     const skillsArray = createArrayFromSkills()
     const linksArray = createArrayFromLinks()
 
     await setDoc(docRef, {
         avatar: ImageURL,
-        name: nameValue,
-        surname: surnameValue,
-        birthDate: birthDateValue,
-        email: emailValue,
-        phoneNumber: phoneNumberValue,
+        personalData: results,
         experience: experienceArray,
         skills: skillsArray,
         links: linksArray
@@ -72,167 +78,144 @@ async function addEmployeeDataToDB(db, userId) {
     console.log("Doc created")
 }
 
+
 /* Filling form form doc */
-
-function fulfillFormFromDoc(docSnapData) {
-
-    setAvatarFromDoc(docSnapData["avatar"])
-
-    setHeaderInputsFromDocSnapData(docSnapData)
-
+const fulfillFormFromDoc = (docSnapData) => {
+    setAvatarFromDocSnapData(docSnapData["avatar"])
+    setPersonalDataInputsFromDocSnapData(docSnapData["personalData"])
     setExperienceInputsFromDocSnapData(docSnapData["experience"])
-
     setSkillFromDocSnapData(docSnapData["skills"])
-
     setLinksFromDocSnapData(docSnapData["links"])
-
 }
 
-function setAvatarFromDoc(avatar) {
+const setAvatarFromDocSnapData = (avatar) => {
+    const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
     const imageSource = avatar.replace("blob:", "")
 
     imageEl.src = imageSource
 
-    avatarLabelEl.textContent = ""
-    avatarLabelEl.appendChild(imageEl)
+    label.textContent = ""
+    label.appendChild(imageEl)
 }
 
-function setHeaderInputsFromDocSnapData(docSnapData) {
-    inputFieldNameEl.value = docSnapData["name"]
-    inputFieldSurnameEl.value = docSnapData["surname"]
-    inputFieldBirthDateEl.value = docSnapData["birthDate"]
-    inputFieldEmailEl.value = docSnapData["email"]
-    inputFieldPhoneNumberEl.value = docSnapData["phoneNumber"]
+const setPersonalDataInputsFromDocSnapData = (personalData) => {
+    const personalDataEl = employeeDOM.personalData
+    Object.keys(personalDataEl).forEach((key, i) => {
+        personalDataEl[key].value = personalData[personalDataNames[i]]
+    })
 }
 
-function setExperienceInputsFromDocSnapData(experience) {
+const setExperienceInputsFromDocSnapData = (experience) => {
+    if (!experience) {
+        return
+    }
+    const experienceContainer = employeeDOM.experience.experienceContainer
+
     for (let i = 1; i < experience.length; i++) {
         addExperienceToExperienceContainer()
     }
 
     for (let i = 0; i < experienceContainer.children.length; i++) {
-        ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"].forEach((e, j) => {
+        experienceDataNames.forEach((e, j) => {
             experienceContainer.children[i].children[j].value = experience[i][e]
         })
     }
 }
 
-function setSkillFromDocSnapData(skills) {
+const setSkillFromDocSnapData = (skills) => {
+    const skillsContainer = employeeDOM.skills.container
+
     for (let el of skills) {
         const skillEl = createSkillEl(el)
 
-        skillsContainerEl.appendChild(skillEl)
+        skillsContainer.appendChild(skillEl)
     }
 }
 
-function setLinksFromDocSnapData(links) {
+const setLinksFromDocSnapData = (links) => {
+    const linksContainer = employeeDOM.links.container
+
     for (let el of links) {
         const linkContainerEl = createLinkContainerEl(el)
 
-        linksContainerEl.appendChild(linkContainerEl)
+        linksContainer.appendChild(linkContainerEl)
     }
 }
 
 
 /* Form management */
+const changeLabelAvatar = () => {
+    const inputField = employeeDOM.avatar.inputField
+    const label = employeeDOM.avatar.label
 
-function changeLabelAvatar() {
     const imageEl = document.createElement("img")
-    const imageSource = URL.createObjectURL(inputFieldAvatarEl.files[0])
+    const imageSource = URL.createObjectURL(inputField.files[0])
 
     imageEl.src = imageSource
 
-    avatarLabelEl.textContent = ""
-    avatarLabelEl.appendChild(imageEl)
+    label.textContent = ""
+    label.appendChild(imageEl)
 }
 
-function addExperienceToExperienceContainer() {
+const addExperienceToExperienceContainer = () => {
+    const experienceContainer = employeeDOM.experience.experienceContainer
     const experienceBoxEl = document.createElement("div")
 
     experienceBoxEl.classList.add("experience")
 
-    const jobTitleInputField = document.createElement("input")
-    const companyNameInputField = document.createElement("input")
-    const startDateInputField = document.createElement("input")
-    const endDateInputField = document.createElement("input")
-    const jobDescriptionInputField = document.createElement("input")
-
-    jobTitleInputField.classList.add("input-field")
-
-    companyNameInputField.classList.add("input-field")
-
-    startDateInputField.classList.add("input-field")
-    startDateInputField.setAttribute("type", "date")
-
-    endDateInputField.classList.add("input-field")
-    endDateInputField.setAttribute("type", "date")
-
-    jobDescriptionInputField.classList.add("input-field")
-
-    experienceBoxEl.appendChild(jobTitleInputField)
-    experienceBoxEl.appendChild(companyNameInputField)
-    experienceBoxEl.appendChild(startDateInputField)
-    experienceBoxEl.appendChild(endDateInputField)
-    experienceBoxEl.appendChild(jobDescriptionInputField)
+    experienceDataNames.forEach((name) => {
+        const input = document.createElement("input")
+        input.classList.add("input-field")
+        if (name == "startDate" || name == "endDate") {
+            input.setAttribute("type", "date")
+        }
+        experienceBoxEl.appendChild(input)
+    })
 
     experienceContainer.appendChild(experienceBoxEl)
-
 }
 
-function addSkillToSkillsContainer() {
-    let inputValue = inputFieldSkillEl.value
+const addElementToContainer = (obj, isContainer) => {
+    const input = obj.inputField
+    const container = obj.container
+    let inputValue = input.value
 
     if (inputValue) {
         inputValue = clearWitheSpacesInData(inputValue)
 
-        const skillEl = createSkillEl(inputValue)
+        let el = ""
+        if (isContainer) {
+            el = createLinkContainerEl(inputValue)
+        }
+        else {
+            el = createSkillEl(inputValue)
+        }
+        container.appendChild(el)
 
-        skillsContainerEl.appendChild(skillEl)
-
-        clearInputField(inputFieldSkillEl)
+        clearInputField(input)
     }
 }
 
-function addLinkToLinksContainer() {
-    let inputValue = inputFieldLinkEl.value
 
-    if (inputValue) {
-        inputValue = clearWitheSpacesInData(inputValue)
-        const linkContainerEl = createLinkContainerEl(inputValue)
-
-        linksContainerEl.appendChild(linkContainerEl)
-
-        clearInputField(inputFieldLinkEl)
-    }
-}
-
-/* Custom functions */
-
-function createArrayFromExperience() {
+/* Custom consts */
+const createArrayFromExperience = () => {
     const experienceArray = document.getElementsByClassName("experience")
     let newExperienceArray = []
 
     for (let experience of experienceArray) {
-        const jobTitle = experience.children[0]
-        const companyName = experience.children[1]
-        const startDate = experience.children[2]
-        const endDate = experience.children[3]
-        const jobDescription = experience.children[4]
-
-        newExperienceArray.push({
-            "jobTitle": jobTitle.value,
-            "companyName": companyName.value,
-            "startDate": startDate.value,
-            "endDate": endDate.value,
-            "jobDescription": jobDescription.value
+        const results = {}
+        experienceDataNames.forEach((name, i) => {
+            results[name] = experience.children[i].value
         })
+        newExperienceArray.push(results)
     }
+
     return newExperienceArray
 }
 
-function createArrayFromSkills() {
-    const skillElsArray = skillsContainerEl.children
+const createArrayFromSkills = () => {
+    const skillElsArray = employeeDOM.skills.container.children
     const skillsArray = []
     for (let el of skillElsArray) {
         skillsArray.push(el.textContent)
@@ -240,8 +223,8 @@ function createArrayFromSkills() {
     return skillsArray
 }
 
-function createArrayFromLinks() {
-    const linkElsArray = linksContainerEl.children
+const createArrayFromLinks = () => {
+    const linkElsArray = employeeDOM.links.container.children
     const linksArray = []
     for (let el of linkElsArray) {
         linksArray.push(el.textContent)
@@ -249,15 +232,16 @@ function createArrayFromLinks() {
     return linksArray
 }
 
-function createURLFromImageFile() {
+const createURLFromImageFile = () => {
+    const input = employeeDOM.avatar.inputField
     // console.log(inputFieldAvatarEl.files[0])
-    const ImageURL = URL.createObjectURL(inputFieldAvatarEl.files[0])
+    const ImageURL = URL.createObjectURL(input.files[0])
     if (ImageURL) {
         return ImageURL
     }
 }
 
-function createSkillEl(value) {
+const createSkillEl = (value) => {
     const skillEl = document.createElement("p")
 
     skillEl.textContent = value
@@ -269,7 +253,7 @@ function createSkillEl(value) {
     return skillEl
 }
 
-function createLinkContainerEl(value) {
+const createLinkContainerEl = (value) => {
     const linkContainer = document.createElement("div")
     const linkEl = document.createElement("a")
     const deleteLinkBtn = document.createElement("input")
