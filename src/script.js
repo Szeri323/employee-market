@@ -1,9 +1,8 @@
-export { collectionName, db }
-
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
 import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
+import { searchForm, getEmployeeWithParameterFromDB } from "./company.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -39,19 +38,22 @@ signOutBtn.addEventListener("click", signOutFromApp)
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // getDocFromDB(user.uid).then((docSnapData) => {
-        //     fulfillFormFromDoc(docSnapData)
-        // })
-        // .catch((error) => {
-        //     console.error(error.message)
-        // })
-
-        // employeeForm.addEventListener("submit", (event) => {
+        getDocFromDB(user.uid).then((docSnapData) => {
+            fulfillFormFromDoc(docSnapData)
+        })
+            .catch((error) => {
+                console.error(error.message)
+            })
+        employeeForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            addEmployeeDataToDB(db, user.uid)
+        })
+        showLoggedInUserView()
+        // searchForm.addEventListener("submit", (event) => {
         //     event.preventDefault()
-        //     addEmployeeDataToDB(db, user.uid)
+        //     getEmployeeWithParameterFromDB(db, collectionName)
         // })
-        // showLoggedInUserView()
-        showLoggedInCompanyView()
+        // showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()
