@@ -1,6 +1,6 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
-import { clearInputField, clearWitheSpacesInData, getAllById, addChange, addClick } from "./custom_functions"
+import { clearInputField, clearWitheSpacesInData, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
 
 const collectionName = "employees"
 
@@ -239,7 +239,7 @@ const createSkillEl = (value) => {
 
     skillEl.textContent = value
 
-    skillEl.addEventListener("dblclick", (event) => {
+    addDblClick(skillEl, (event) => {
         event.target.remove()
     })
 
@@ -262,7 +262,7 @@ const createLinkContainerEl = (value) => {
     deleteLinkBtn.type = "button"
     deleteLinkBtn.value = "X"
 
-    deleteLinkBtn.addEventListener("dblclick", (event) => {
+    addDblClick(deleteLinkBtn, (event) => {
         event.target.parentElement.remove()
     })
 

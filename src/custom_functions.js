@@ -20,3 +20,7 @@ export const clearWitheSpacesInData = data => data.trim()
 
 export const addClick = (el, func) => { el.addEventListener("click", func) }
 export const addChange = (el, func) => { el.addEventListener("change", func) }
+
+export const addDblClick = (el, func) => {
+    el.addEventListener("dblclick", func)
+}
