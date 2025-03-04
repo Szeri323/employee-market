@@ -42,33 +42,37 @@ const employeeForm = employeeDOM.form
 
 /* DB operations */
 const addEmployeeDataToDB = async (db, userId) => {
-    const employeeRef = collection(db, collectionName)
-    const docRef = doc(employeeRef, userId)
+    try {
+        const employeeRef = collection(db, collectionName)
+        const docRef = doc(employeeRef, userId)
 
-    const ImageURL = createURLFromImageFile()
+        const ImageURL = createURLFromImageFile()
 
-    const results = {}
-    const personalData = employeeDOM.personalData
+        const results = {}
+        const personalData = employeeDOM.personalData
 
-    Object.keys(personalData).forEach((key, i) => {
-        const itemName = personalDataNames[i]
-        const value = personalData[key].value
-        results[itemName] = itemName == "birthDate" ? value : clearWitheSpacesInData(value)
-    })
+        Object.keys(personalData).forEach((key, i) => {
+            const itemName = personalDataNames[i]
+            const value = personalData[key].value
+            results[itemName] = itemName == "birthDate" ? value : clearWitheSpacesInData(value)
+        })
 
-    const experienceArray = createArrayFromExperience()
-    console.log(experienceArray)
-    const skillsArray = createArrayFromSkills()
-    const linksArray = createArrayFromLinks()
+        const experienceArray = createArrayFromExperience()
+        const skillsArray = createArrayFromSkills()
+        const linksArray = createArrayFromLinks()
 
-    await setDoc(docRef, {
-        avatar: ImageURL,
-        personalData: results,
-        experience: experienceArray,
-        skills: skillsArray,
-        links: linksArray
-    })
-    console.log("Doc created")
+        await setDoc(docRef, {
+            avatar: ImageURL,
+            personalData: results,
+            experience: experienceArray,
+            skills: skillsArray,
+            links: linksArray
+        })
+        console.log("Doc created")
+    }
+    catch (error) {
+        console.error(error.message)
+    }
 }
 
 
@@ -177,7 +181,7 @@ const addElementToContainer = (obj, isContainer) => {
     if (inputValue) {
         inputValue = clearWitheSpacesInData(inputValue)
 
-        let el = ""
+        let el = new Object()
         if (isContainer) {
             el = createLinkContainerEl(inputValue)
         }
@@ -199,11 +203,14 @@ const createArrayFromExperience = () => {
     for (let experience of experienceArray) {
         const results = {}
         experienceDataNames.forEach((name, i) => {
+            console.log(experience.children[i].value)
             results[name] = experience.children[i].value
         })
+        if (results["endDate"] < results["startDate"]) {
+            throw new Error("End date is earlier than start date.")
+        }
         newExperienceArray.push(results)
     }
-
     return newExperienceArray
 }
 
