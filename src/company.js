@@ -1,69 +1,108 @@
 export { searchForm, getEmployeeWithParameterFromDB }
 import { collection, query, where, getDocs, and } from "firebase/firestore"
+import { addChange, addDblClick, getAllById } from "./custom_functions"
 
+const companyDOMElementIds = {
+    searchForm: "search-form",
+    selectSkills: "select-skills-search",
+    selectLanguages: "select-languages-search",
+    selectLanguageLevel: "select-language-level-search",
+    searchBtn: "search-btn",
+    results: {
+        container: "results-search"
+    },
+    searchParams: "search-params-container"
 
-const searchForm = document.getElementById("search-form")
-const selectSkillsSearchEl = document.getElementById("select-skills-search")
-const skillsContainer = document.getElementById("skills-conatiner-search")
-const searchBtn = document.getElementById("search-btn")
-const resultsContainer = document.getElementById("results-search")
+}
 
+const companyDOM = getAllById(companyDOMElementIds)
+const searchForm = companyDOM["searchForm"]
 
-selectSkillsSearchEl.addEventListener("change", addItemToContainer)
+const selects = [companyDOM.selectSkills, companyDOM.selectLanguages, companyDOM.selectLanguageLevel]
 
 /* DB operations */
-async function getEmployeeWithParameterFromDB(db, collectionName) {
+const getEmployeeWithParameterFromDB = async (db, collectionName) => {
     const employeeRef = collection(db, collectionName)
     const skillsArray = createSkillsArrayFromContainer()
-    console.log(skillsArray)
+    const container = companyDOM.results.container
 
-    let q = employeeRef
+    const q = query(employeeRef, where("skills", "array-contains-any", skillsArray))
 
-    if (skillsArray) {
-        q = query(employeeRef, where("skills", "array-contains-any", skillsArray))
-    }
-    if (skillsArray && skillsArray.length == 2) {
-        q = query(employeeRef,
-            where("skills", "array-contains", skillsArray[0]),
-            where("skills", "array-contains", skillsArray[1]),
-        )
-    }
+    container.innerHTML = ""
+
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot)
     querySnapshot.forEach((doc) => {
-        // const userBox = document.createElement("div")
-        // const avatar = document.createElement("img")
-        // const userDataBox = document.createElement("div")
+        addEmployeeToResultsContainer(doc.data()["personalData"]["name"], doc.data()["skills"])
         console.log(doc.id, " => ", doc.data());
     })
 }
 
 
 /* Form Management */
-
-function addItemToContainer() {
+const addItemToContainer = (select) => {
+    const container = companyDOM.searchParams
     const entryArray = []
-    for (let el of skillsContainer.children) {
+    for (let el of container.children) {
         entryArray.push(el.textContent)
     }
-    const skillEl = document.createElement("p")
-    if (selectSkillsSearchEl.value && !entryArray.includes(selectSkillsSearchEl.value)) {
-        skillEl.textContent = selectSkillsSearchEl.value
-        skillsContainer.appendChild(skillEl)
-        entryArray.push(selectSkillsSearchEl.value)
+    const el = document.createElement("p")
+    if (select.value && !entryArray.includes(select.value)) {
+        el.textContent = select.value
+        addDblClick(el, (event) => {
+            event.target.remove()
+        })
+        container.appendChild(el)
+        entryArray.push(select.value)
     }
+}
+
+const addEmployeeToResultsContainer = (employeeName, employeeSkills) => {
+    const container = companyDOM.results.container
+
+    const employeeBox = document.createElement("div")
+    const avatar = document.createElement("div")
+    const data = document.createElement("div")
+    const name = document.createElement("p")
+    const skills = document.createElement("div")
+
+    employeeBox.classList.add("user-box")
+    avatar.classList.add("avatar")
+    data.classList.add("user-data")
+    skills.classList.add("user-skills")
+
+    name.textContent = employeeName
+
+    employeeSkills.forEach((skill) => {
+        const span = document.createElement("span")
+        span.textContent = skill
+        skills.appendChild(span)
+    })
+
+    data.appendChild(name)
+    data.appendChild(skills)
+
+    employeeBox.appendChild(avatar)
+    employeeBox.appendChild(data)
+
+    container.appendChild(employeeBox)
 }
 
 
 /* Custom Functions */
-
-function createSkillsArrayFromContainer() {
-    if (skillsContainer.children.length == 0) {
+const createSkillsArrayFromContainer = () => {
+    const container = companyDOM.searchParams
+    if (container.children.length == 0) {
         return null
     }
     const skillsArray = []
-    for (let el of skillsContainer.children) {
+    for (let el of container.children) {
         skillsArray.push(el.textContent)
     }
     return skillsArray
 }
+
+
+/* Event listeners */
+selects.forEach((select) => {
+    addChange(select, addItemToContainer.bind(null, select))
+})

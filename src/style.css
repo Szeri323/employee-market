@@ -141,7 +141,7 @@ input::-webkit-inner-spin-button {
     display: none;
 }
 
-.skills {
+.skills, .search-params {
     display: flex;
     flex-wrap: wrap;
     /* flex-grow: 1; */
@@ -149,7 +149,7 @@ input::-webkit-inner-spin-button {
     margin-bottom: 1em;
 }
 
-.skills p {
+.skills p, .search-params p {
     padding: 1em;
     background-color: var(--dark);
     color: #fff;
@@ -159,7 +159,7 @@ input::-webkit-inner-spin-button {
     user-select: none;
 }
 
-.skills p:hover {
+.skills p:hover, .search-params p:hover {
     background-color: var(--darker);
 }
 
@@ -225,8 +225,8 @@ input::-webkit-inner-spin-button {
     margin: 1em 0;
     padding: .2em;
     display: flex;
-    gap: 1em;
     align-items: center;
+    gap: 1em;
     background-color: var(--white);
 }
 
@@ -238,9 +238,18 @@ input::-webkit-inner-spin-button {
 }
 
 .user-data {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: .5em;
     background-color: #1f6e2b;
 }
 
+.user-skills {
+    display: flex;
+    gap: 1em;
+}
 
 
 
