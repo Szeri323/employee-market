@@ -1,10 +1,11 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
-import { clearInputField, clearWhiteSpacesInData, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
+import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
 
 const collectionName = "employees"
 
 const employeeDomElementIds = {
+    errorPreview: "error-preview",
     form: "employee-form",
     avatar: {
         label: "avatar-label",
@@ -54,7 +55,15 @@ const addEmployeeDataToDB = async (db, userId) => {
         Object.keys(personalData).forEach((key, i) => {
             const itemName = personalDataNames[i]
             const value = personalData[key].value
-            results[itemName] = itemName == "birthDate" ? value : clearWhiteSpacesInData(value)
+            if (itemName == "email") {
+                results[itemName] = validateEmail(value)
+            }
+            else if (itemName == "birthDate") {
+                results[itemName] = value
+            }
+            else {
+                results[itemName] = clearWhiteSpacesInData(value)
+            }
         })
 
         const experienceArray = createArrayFromExperience()
@@ -69,9 +78,11 @@ const addEmployeeDataToDB = async (db, userId) => {
             links: linksArray
         })
         console.log("Doc created")
+        employeeDOM.errorPreview.textContent = ""
     }
     catch (error) {
         console.error(error.message)
+        employeeDOM.errorPreview.textContent = error.message
     }
 }
 
@@ -281,17 +292,7 @@ const createContainerEl = (value) => {
     return linkContainer
 }
 
-const validateData = (data) => {
-    data = clearWhiteSpacesInData(data)
-    data = data.toLowerCase()
-    let newData = ""
-    for (let char of data){
-        if (char != " ") {
-            newData += char
-        }
-    }
-    return newData
-}
+
 
 /* Event listeners */
 addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
