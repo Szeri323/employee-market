@@ -16,7 +16,7 @@ export const getAllById = (obj) => {
 
 export const clearInputField = (element) => { element.value = "" }
 
-export const clearWitheSpacesInData = data => data.trim() 
+export const clearWhiteSpacesInData = data => data.trim() 
 
 export const addClick = (el, func) => { el.addEventListener("click", func) }
 export const addChange = (el, func) => { el.addEventListener("change", func) }
