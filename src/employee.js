@@ -47,7 +47,7 @@ const addEmployeeDataToDB = async (db, userId) => {
         const employeeRef = collection(db, collectionName)
         const docRef = doc(employeeRef, userId)
 
-        const ImageURL = createURLFromImageFile()
+        const ImageURL = await createURLFromImageFile()
 
         const results = {}
         const personalData = employeeDOM.personalData
@@ -99,6 +99,7 @@ const fulfillFormFromDoc = (docSnapData) => {
 const setAvatarFromDocSnapData = (avatar) => {
     const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
+
     const imageSource = avatar.replace("blob:", "")
 
     imageEl.src = imageSource
@@ -153,12 +154,13 @@ const setLinksFromDocSnapData = (links) => {
 
 
 /* Form management */
-const changeLabelAvatar = () => {
+const changeLabelAvatar = async () => {
     const inputField = employeeDOM.avatar.inputField
     const label = employeeDOM.avatar.label
 
     const imageEl = document.createElement("img")
-    const imageSource = URL.createObjectURL(inputField.files[0])
+
+    const imageSource = await getBase64Image(inputField.files[0])
 
     imageEl.src = imageSource
 
@@ -217,7 +219,6 @@ const createArrayFromExperience = () => {
     for (let experience of experienceArray) {
         const results = {}
         experienceDataNames.forEach((name, i) => {
-            console.log(experience.children[i].value)
             results[name] = experience.children[i].value
         })
         if (results["endDate"] < results["startDate"]) {
@@ -246,10 +247,9 @@ const createArrayFromLinks = () => {
     return linksArray
 }
 
-const createURLFromImageFile = () => {
+const createURLFromImageFile = async () => {
     const input = employeeDOM.avatar.inputField
-    // console.log(inputFieldAvatarEl.files[0])
-    const ImageURL = URL.createObjectURL(input.files[0])
+    const ImageURL = await getBase64Image(input.files[0])
     if (ImageURL) {
         return ImageURL
     }
@@ -292,7 +292,19 @@ const createContainerEl = (value) => {
     return linkContainer
 }
 
+const getBase64Image = (file) => {
+    return new Promise((resolve) => {
+        convertFileToBase64(file, resolve)
+    })
+}
 
+const convertFileToBase64 = (file, callback) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+        callback(reader.result)
+    }
+}
 
 /* Event listeners */
 addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
