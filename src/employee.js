@@ -1,6 +1,6 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { collection, doc, setDoc } from "firebase/firestore"
-import { clearInputField, clearWitheSpacesInData, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
+import { clearInputField, clearWhiteSpacesInData, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
 
 const collectionName = "employees"
 
@@ -54,7 +54,7 @@ const addEmployeeDataToDB = async (db, userId) => {
         Object.keys(personalData).forEach((key, i) => {
             const itemName = personalDataNames[i]
             const value = personalData[key].value
-            results[itemName] = itemName == "birthDate" ? value : clearWitheSpacesInData(value)
+            results[itemName] = itemName == "birthDate" ? value : clearWhiteSpacesInData(value)
         })
 
         const experienceArray = createArrayFromExperience()
@@ -124,7 +124,7 @@ const setSkillFromDocSnapData = (skills) => {
     const skillsContainer = employeeDOM.skills.container
 
     for (let el of skills) {
-        const skillEl = createSkillEl(el)
+        const skillEl = createEl(el)
 
         skillsContainer.appendChild(skillEl)
     }
@@ -134,7 +134,7 @@ const setLinksFromDocSnapData = (links) => {
     const linksContainer = employeeDOM.links.container
 
     for (let el of links) {
-        const linkContainerEl = createLinkContainerEl(el)
+        const linkContainerEl = createContainerEl(el)
 
         linksContainer.appendChild(linkContainerEl)
     }
@@ -174,19 +174,22 @@ const addExperienceToExperienceContainer = () => {
 }
 
 const addElementToContainer = (obj, isContainer) => {
+    /*
+        isContainer checks if element is skillEL or linksContainer
+    */
     const input = obj.inputField
     const container = obj.container
     let inputValue = input.value
 
     if (inputValue) {
-        inputValue = clearWitheSpacesInData(inputValue)
+        inputValue = validateData(inputValue)
 
         let el = new Object()
         if (isContainer) {
-            el = createLinkContainerEl(inputValue)
+            el = createContainerEl(inputValue)
         }
         else {
-            el = createSkillEl(inputValue)
+            el = createEl(inputValue)
         }
         container.appendChild(el)
 
@@ -241,19 +244,19 @@ const createURLFromImageFile = () => {
     }
 }
 
-const createSkillEl = (value) => {
-    const skillEl = document.createElement("p")
+const createEl = (value) => {
+    const el = document.createElement("p")
 
-    skillEl.textContent = value
+    el.textContent = value
 
-    addDblClick(skillEl, (event) => {
+    addDblClick(el, (event) => {
         event.target.remove()
     })
 
-    return skillEl
+    return el
 }
 
-const createLinkContainerEl = (value) => {
+const createContainerEl = (value) => {
     const linkContainer = document.createElement("div")
     const linkEl = document.createElement("a")
     const deleteLinkBtn = document.createElement("input")
@@ -276,6 +279,18 @@ const createLinkContainerEl = (value) => {
     linkContainer.appendChild(linkEl)
     linkContainer.appendChild(deleteLinkBtn)
     return linkContainer
+}
+
+const validateData = (data) => {
+    data = clearWhiteSpacesInData(data)
+    data = data.toLowerCase()
+    let newData = ""
+    for (let char of data){
+        if (char != " ") {
+            newData += char
+        }
+    }
+    return newData
 }
 
 /* Event listeners */
