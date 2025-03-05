@@ -82,7 +82,8 @@ body {
 }
 
 .data-container {
-    margin: 1em;
+    width: 800px;
+    margin: 1em auto;
 }
 
 .employee-data-header {
@@ -90,9 +91,10 @@ body {
 }
 
 .data-box {
+    /* background-color: red; */
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: 100%;
     margin: 0 auto 2em;
 }
 
@@ -116,6 +118,10 @@ body {
 .input-field {
     padding: 1em 1em;
     margin: 1em 0;
+}
+
+.input-field-description {
+    resize: vertical;
 }
 
 .avatar-label {
@@ -263,9 +269,9 @@ input::-webkit-inner-spin-button {
 }
 
 #logged-in-user-view {
-    display: none;
+    /* display: none; */
 }
 
 #logged-in-company-view {
-    /* display: none; */
+    display: none;
 }
