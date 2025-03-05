@@ -47,7 +47,13 @@ const addEmployeeDataToDB = async (db, userId) => {
         const employeeRef = collection(db, collectionName)
         const docRef = doc(employeeRef, userId)
 
-        const ImageURL = await createURLFromImageFile()
+        let ImageURL = ""
+        if(employeeDOM.avatar.label.children[0].src) {
+            ImageURL = employeeDOM.avatar.label.children[0].src
+        }
+        else {
+            ImageURL = await createURLFromImageFile()
+        }
 
         const results = {}
         const personalData = employeeDOM.personalData
@@ -99,8 +105,8 @@ const fulfillFormFromDoc = (docSnapData) => {
 const setAvatarFromDocSnapData = (avatar) => {
     const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
-
-    const imageSource = avatar.replace("blob:", "")
+    
+    const imageSource = avatar
 
     imageEl.src = imageSource
 
@@ -159,7 +165,7 @@ const changeLabelAvatar = async () => {
     const label = employeeDOM.avatar.label
 
     const imageEl = document.createElement("img")
-
+    
     const imageSource = await getBase64Image(inputField.files[0])
 
     imageEl.src = imageSource
@@ -219,7 +225,7 @@ const createArrayFromExperience = () => {
     for (let experience of experienceArray) {
         const results = {}
         experienceDataNames.forEach((name, i) => {
-            results[name] = experience.children[i].value
+            results[name] = name == "startDate" && name == "endDate" ? value : clearWhiteSpacesInData(experience.children[i].value)
         })
         if (results["endDate"] < results["startDate"]) {
             throw new Error("End date is earlier than start date.")
