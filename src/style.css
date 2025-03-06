@@ -1,5 +1,6 @@
 :root {
     --accent-clr: #268534;
+    --accent-darker-clr: #1f6e2b;
     --red: red;
     --dark-red: darkred;
     --dark: #333;
@@ -15,7 +16,6 @@
     --fs-h1: 3rem;
     --fs-h2: 1.75rem;
     --fs-h3: 1.125rem;
-
 }
 
 *,
@@ -43,7 +43,7 @@ body {
     padding: 1em 2em;
     margin-bottom: 3em;
     position: relative;
-    font-family: "Roboto", sans-serif;
+    font-family: var(--ff);
     font-weight: var(--fw-bold);
     background-color: var(--accent-clr);
     color: var(--white);
@@ -55,13 +55,12 @@ body {
 }
 
 .btn:hover {
-    background-color: #1f6e2b;
+    background-color: var(--accent-darker-clr);
     transform: scale(1.1);
 }
 
 /* Logged out view */
-
-.btn-sign-in-google {
+.btn-google {
     padding: 10px 10px 10px 60px;
     height: 60px;
 }
@@ -76,13 +75,12 @@ body {
 }
 
 /* Logged in User view */
-
 .error-preview {
     color: var(--red);
 }
 
 .data-container {
-    width: 800px;
+    max-width: 800px;
     margin: 1em auto;
 }
 
@@ -91,7 +89,6 @@ body {
 }
 
 .data-box {
-    /* background-color: red; */
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -108,7 +105,6 @@ body {
     margin: .5em 0;
     display: flex;
     flex-direction: column;
-    /* border: 3px solid black; */
 }
 
 .btn-add-experience {
@@ -150,15 +146,17 @@ input::-webkit-inner-spin-button {
     display: none;
 }
 
-.skills, .search-params {
+.skills,
+.search-params {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
-    /* flex-grow: 1; */
     gap: 1rem;
     margin-bottom: 1em;
 }
 
-.skills p, .search-params p {
+.skills p,
+.search-params p {
     padding: 1em;
     background-color: var(--dark);
     color: #fff;
@@ -168,7 +166,8 @@ input::-webkit-inner-spin-button {
     user-select: none;
 }
 
-.skills p:hover, .search-params p:hover {
+.skills p:hover,
+.search-params p:hover {
     background-color: var(--darker);
 }
 
@@ -181,7 +180,6 @@ input::-webkit-inner-spin-button {
 .link-container {
     display: flex;
     gap: 1em;
-
 }
 
 .btn-delete {
@@ -193,7 +191,6 @@ input::-webkit-inner-spin-button {
 }
 
 /* Logged in Company view */
-
 .data-container-search {
     display: flex;
     flex-direction: column;
@@ -252,17 +249,13 @@ input::-webkit-inner-spin-button {
     flex-direction: column;
     text-align: left;
     gap: .5em;
-    background-color: #1f6e2b;
+    background-color: var(--accent-darker-clr);
 }
 
 .user-skills {
     display: flex;
     gap: 1em;
 }
-
-
-
-
 
 #logged-out-view {
     display: none;

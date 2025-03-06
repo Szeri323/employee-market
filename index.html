@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <div id="logged-out-view">
-            <button id="sign-in-google-btn" class="btn btn-sign-in-google">
+            <button id="sign-in-google-btn" class="btn btn-google">
                 <img class="sign-in-icon" src="./src/icons/google-brands.svg" alt="">
                 Zaloguj się z Google
             </button>
@@ -41,9 +41,9 @@
                         <p>Dane personalne</p>
                         <input id="input-name" class="input-field" type="text" placeholder="Imię">
                         <input id="input-surname" class="input-field" type="text" placeholder="Nazwisko">
-                        <input id="input-birth-date" class="input-field" type="date" placeholder="Data urodzenia">
+                        <input id="input-birth-date" class="input-field" type="date">
                         <input id="input-email" class="input-field" type="email" placeholder="Email">
-                        <input id="input-phone-number" class="input-field" type="number" placeholder="Number Telefonu">
+                        <input id="input-phone-number" class="input-field" type="number" placeholder="Number telefonu">
                     </div>
                 </div>
 
@@ -54,10 +54,9 @@
                         <div class="experience">
                             <input class="input-field input-field-job-title" type="text" placeholder="Nazwa stanowiska">
                             <input class="input-field input-field-company-name" type="text" placeholder="Nazwa firmy">
-                            <input class="input-field input-field-start-date" type="date"
-                                placeholder="Data rozpoczęcia">
-                            <input class="input-field input-field-end-date" type="date" placeholder="Data zakończenia">
-                            <textarea class="input-field input-field-description" type="text" maxlength="500"
+                            <input class="input-field input-field-start-date" type="date">
+                            <input class="input-field input-field-end-date" type="date">
+                            <textarea class="input-field input-field-description" maxlength="500"
                                 placeholder="Opis stanowiska"></textarea>
                         </div>
                     </div>
@@ -99,7 +98,7 @@
         </div>
 
         <div id="logged-in-company-view">
-            <button id="sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
+            <button id="company-view-sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
             <p>Cześć jesteś zalogowany jako Firma!</p>
 
 

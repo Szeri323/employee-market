@@ -28,14 +28,13 @@ const loggedOutView = document.getElementById("logged-out-view")
 
 const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
 const signOutBtn = document.getElementById("sign-out-btn")
-
-
+const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn")
 
 signInWithGoogleBtn.addEventListener("click", logInViaGoogle)
 signOutBtn.addEventListener("click", signOutFromApp)
+signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 
 /* Auth section */
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         getDocFromDB(user.uid).then((docSnapData) => {
@@ -94,7 +93,6 @@ async function getDocFromDB(userId) {
 
 
 /* Custom functions */
-
 function showLoggedInUserView() {
     hideView(loggedOutView)
     hideView(loggedInCompanyView)
