@@ -32,7 +32,7 @@ const getEmployeeWithParameterFromDB = async (db, collectionName) => {
 
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-        addEmployeeToResultsContainer(doc.data()["personalData"]["name"], doc.data()["skills"])
+        addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
         console.log(doc.id, " => ", doc.data());
     })
 }
@@ -56,19 +56,21 @@ const addItemToContainer = (select) => {
     }
 }
 
-const addEmployeeToResultsContainer = (employeeName, employeeSkills) => {
+const addEmployeeToResultsContainer = (employeeAvatar, employeeName, employeeSkills) => {
     const container = companyDOM.results.container
 
     const employeeBox = document.createElement("div")
-    const avatar = document.createElement("div")
+    const avatar = document.createElement("img")
     const data = document.createElement("div")
-    const name = document.createElement("p")
+    const name = document.createElement("h3")
     const skills = document.createElement("div")
 
     employeeBox.classList.add("user-box")
     avatar.classList.add("avatar")
     data.classList.add("user-data")
     skills.classList.add("user-skills")
+
+    avatar.src = `${employeeAvatar}`
 
     name.textContent = employeeName
 

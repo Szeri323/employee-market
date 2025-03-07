@@ -37,22 +37,22 @@ signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 /* Auth section */
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        getDocFromDB(user.uid).then((docSnapData) => {
-            fulfillFormFromDoc(docSnapData)
-        })
-            .catch((error) => {
-                console.error(error.message)
-            })
-        employeeForm.addEventListener("submit", (event) => {
-            event.preventDefault()
-            addEmployeeDataToDB(db, user.uid)
-        })
-        showLoggedInUserView()
-        // searchForm.addEventListener("submit", (event) => {
-        //     event.preventDefault()
-        //     getEmployeeWithParameterFromDB(db, collectionName)
+        // getDocFromDB(user.uid).then((docSnapData) => {
+        //     fulfillFormFromDoc(docSnapData)
         // })
-        // showLoggedInCompanyView()
+        //     .catch((error) => {
+        //         console.error(error.message)
+        //     })
+        // employeeForm.addEventListener("submit", (event) => {
+        //     event.preventDefault()
+        //     addEmployeeDataToDB(db, user.uid)
+        // })
+        // showLoggedInUserView()
+        searchForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            getEmployeeWithParameterFromDB(db, collectionName)
+        })
+        showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()
