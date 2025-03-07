@@ -33,7 +33,26 @@ const getEmployeeWithParameterFromDB = async (db, collectionName) => {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
         addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
-        console.log(doc.id, " => ", doc.data());
+    })
+}
+
+export const getSkillsFromDB = async (db, collectionName) => {
+    const employeeRef = collection(db, collectionName)
+    const SkillsSet = new Set()
+    const selectSkills = companyDOM.selectSkills
+
+    const querySnapshot = await getDocs(employeeRef);
+    querySnapshot.forEach((doc) => {
+        doc.data()["skills"].forEach((skill) => {
+            SkillsSet.add(skill)
+        })
+    })
+
+    SkillsSet.forEach((skill) => {
+        const skillEl = document.createElement("option")
+        skillEl.value = skill
+        skillEl.textContent = skill
+        selectSkills.appendChild(skillEl)
     })
 }
 
