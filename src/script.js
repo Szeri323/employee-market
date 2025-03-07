@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
 import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
-import { searchForm, getEmployeeWithParameterFromDB } from "./company.js";
+import { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB } from "./company.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -48,6 +48,7 @@ onAuthStateChanged(auth, (user) => {
         //     addEmployeeDataToDB(db, user.uid)
         // })
         // showLoggedInUserView()
+        getSkillsFromDB(db, collectionName)
         searchForm.addEventListener("submit", (event) => {
             event.preventDefault()
             getEmployeeWithParameterFromDB(db, collectionName)
