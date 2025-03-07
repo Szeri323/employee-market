@@ -1,4 +1,4 @@
-export { searchForm, getEmployeeWithParameterFromDB }
+export { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB }
 import { collection, query, where, getDocs, and } from "firebase/firestore"
 import { addChange, addDblClick, getAllById } from "./custom_functions"
 
@@ -36,7 +36,7 @@ const getEmployeeWithParameterFromDB = async (db, collectionName) => {
     })
 }
 
-export const getSkillsFromDB = async (db, collectionName) => {
+const getSkillsFromDB = async (db, collectionName) => {
     const employeeRef = collection(db, collectionName)
     const SkillsSet = new Set()
     const selectSkills = companyDOM.selectSkills
