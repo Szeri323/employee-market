@@ -1,18 +1,26 @@
-const getById = (el) => { return document.getElementById(el) }
+const getById = (el: string): HTMLElement | null => {
+    return document.getElementById(el)
+}
 
-export const getAllById = (obj) => {
-    const results = {}
+// zwraca obiekt o tej samej strukturze, ale z elementami DOM zamiast stringów
+export type RecursiveHTMLElement<T> = {
+    [K in keyof T]: T[K] extends string ? HTMLElement : RecursiveHTMLElement<T[K]>
+}
+
+export const getAllById = <T extends Record<string, any>>(obj: T): RecursiveHTMLElement<T> => {
+    const results = {} as RecursiveHTMLElement<T>;
+
     Object.keys(obj).forEach((key) => {
-        const element = obj[key]
-        if (typeof element == "string") {
-            results[key] = getById(element)
-        }
-        else if (typeof element == "object" && element != null) {
-            results[key] = getAllById(obj[key])
+        const element = obj[key];
+        if (typeof element === "string") {
+            results[key as keyof T] = getById(element) as RecursiveHTMLElement<T>[keyof T];
+        } else if (typeof element === "object" && element !== null) {
+            results[key as keyof T] = getAllById(element) as RecursiveHTMLElement<T>[keyof T];
         }
     });
-    return results
-}
+
+    return results;
+};
 
 export const clearInputField = (element) => { element.value = "" }
 
@@ -33,7 +41,7 @@ export const validateData = (data) => {
 export const validateEmail = (email) => {
     email = clearWhiteSpacesInData(email)
     const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if(!regExp.test(email)) {
+    if (!regExp.test(email)) {
         throw new Error("Invalid email.")
     }
     return email

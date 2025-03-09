@@ -22,13 +22,13 @@ const db = getFirestore(app)
 
 const collectionName = "employees"
 
-const loggedInUserView = document.getElementById("logged-in-user-view")
-const loggedInCompanyView = document.getElementById("logged-in-company-view")
-const loggedOutView = document.getElementById("logged-out-view")
+const loggedInUserView = document.getElementById("logged-in-user-view") as HTMLElement
+const loggedInCompanyView = document.getElementById("logged-in-company-view") as HTMLElement
+const loggedOutView = document.getElementById("logged-out-view") as HTMLElement
 
-const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
-const signOutBtn = document.getElementById("sign-out-btn")
-const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn")
+const signInWithGoogleBtn = document.getElementById("sign-in-google-btn") as HTMLButtonElement
+const signOutBtn = document.getElementById("sign-out-btn") as HTMLButtonElement
+const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn") as HTMLButtonElement
 
 signInWithGoogleBtn.addEventListener("click", logInViaGoogle)
 signOutBtn.addEventListener("click", signOutFromApp)
@@ -111,10 +111,10 @@ function showLoggedOutView() {
     showView(loggedOutView)
 }
 
-function showView(view) {
+function showView(view: HTMLElement) {
     view.style.display = "block"
 }
 
-function hideView(view) {
+function hideView(view: HTMLElement) {
     view.style.display = "none"
 }

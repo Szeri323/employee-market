@@ -1,6 +1,6 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
-import { collection, doc, setDoc } from "firebase/firestore"
-import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
+import { collection, doc, Firestore, setDoc } from "firebase/firestore"
+import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick, RecursiveHTMLElement } from "./custom_functions"
 
 const collectionName = "employees"
 
@@ -34,7 +34,10 @@ const employeeDomElementIds = {
     }
 }
 
-const employeeDOM = getAllById(employeeDomElementIds)
+ type employeeDomElementIdsKeyT = keyof typeof employeeDomElementIds
+ type employeeDomElementIdsValuesT = typeof employeeDomElementIds[employeeDomElementIdsKeyT]
+
+const employeeDOM: RecursiveHTMLElement<typeof employeeDomElementIds> = getAllById(employeeDomElementIds)
 
 const personalDataNames = ["name", "surname", "birthDate", "email", "phoneNumber"]
 const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"]
@@ -42,17 +45,18 @@ const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", 
 const employeeForm = employeeDOM.form
 
 /* DB operations */
-const addEmployeeDataToDB = async (db, userId) => {
+const addEmployeeDataToDB = async (db: Firestore, userId: string | undefined) => {
     try {
         const employeeRef = collection(db, collectionName)
         const docRef = doc(employeeRef, userId)
 
         let ImageURL = ""
-        if(employeeDOM.avatar.label.children[0].src) {
-            ImageURL = employeeDOM.avatar.label.children[0].src
+        const children = employeeDOM.avatar.label.children[0] as HTMLImageElement
+        if (children.src) {
+            ImageURL = children.src
         }
         else {
-            ImageURL = await createURLFromImageFile()
+            ImageURL = await createURLFromImageFile() as string
         }
 
         const results = {}
@@ -94,7 +98,7 @@ const addEmployeeDataToDB = async (db, userId) => {
 
 
 /* Filling form form doc */
-const fulfillFormFromDoc = (docSnapData) => {
+const fulfillFormFromDoc = (docSnapData: employeeDomElementIdsKeyT) => {
     setAvatarFromDocSnapData(docSnapData["avatar"])
     setPersonalDataInputsFromDocSnapData(docSnapData["personalData"])
     setExperienceInputsFromDocSnapData(docSnapData["experience"])
@@ -105,7 +109,7 @@ const fulfillFormFromDoc = (docSnapData) => {
 const setAvatarFromDocSnapData = (avatar) => {
     const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
-    
+
     const imageSource = avatar
 
     imageEl.src = imageSource
@@ -114,18 +118,18 @@ const setAvatarFromDocSnapData = (avatar) => {
     label.appendChild(imageEl)
 }
 
-const setPersonalDataInputsFromDocSnapData = (personalData) => {
+const setPersonalDataInputsFromDocSnapData = (personalData: string[]) => {
     const personalDataEl = employeeDOM.personalData
     Object.keys(personalDataEl).forEach((key, i) => {
         personalDataEl[key].value = personalData[personalDataNames[i]]
     })
 }
 
-const setExperienceInputsFromDocSnapData = (experience) => {
+const setExperienceInputsFromDocSnapData = (experience: string[]) => {
     if (!experience) {
         return
     }
-    const experienceContainer = employeeDOM.experience.experienceContainer
+    const experienceContainer = employeeDOM.experience.experienceContainer as HTMLLinkElement
 
     for (let i = 1; i < experience.length; i++) {
         addExperienceToExperienceContainer()
@@ -133,12 +137,13 @@ const setExperienceInputsFromDocSnapData = (experience) => {
 
     for (let i = 0; i < experienceContainer.children.length; i++) {
         experienceDataNames.forEach((e, j) => {
-            experienceContainer.children[i].children[j].value = experience[i][e]
+            const children = experienceContainer.children[i].children[j] as HTMLInputElement
+            children.value = experience[i][e]
         })
     }
 }
 
-const setSkillFromDocSnapData = (skills) => {
+const setSkillFromDocSnapData = (skills: string[]) => {
     const skillsContainer = employeeDOM.skills.container
 
     for (let el of skills) {
@@ -148,7 +153,7 @@ const setSkillFromDocSnapData = (skills) => {
     }
 }
 
-const setLinksFromDocSnapData = (links) => {
+const setLinksFromDocSnapData = (links: string[]) => {
     const linksContainer = employeeDOM.links.container
 
     for (let el of links) {
@@ -160,27 +165,37 @@ const setLinksFromDocSnapData = (links) => {
 
 
 /* Form management */
-const changeLabelAvatar = async () => {
-    const inputField = employeeDOM.avatar.inputField
-    const label = employeeDOM.avatar.label
+const changeLabelAvatar = async (): Promise<void> => {
+    const inputField = employeeDOM.avatar.inputField as HTMLInputElement | null
+    const label = employeeDOM.avatar.label as HTMLLabelElement | null
 
-    const imageEl = document.createElement("img")
-    
-    const imageSource = await getBase64Image(inputField.files[0])
+    if (!inputField || !label || !inputField.files || inputField.files.length === 0) {
+        return
+    }
 
-    imageEl.src = imageSource
+    const imageEl = document.createElement("img");
 
-    label.textContent = ""
-    label.appendChild(imageEl)
-}
+    try {
+        const imageSource = await getBase64Image(inputField.files[0]) as string
+        imageEl.src = imageSource
+
+        label.textContent = ""
+        label.appendChild(imageEl)
+    } catch (error) {
+        console.error("Error converting image to Base64:", error)
+    }
+};
+
 
 const addExperienceToExperienceContainer = () => {
     const experienceContainer = employeeDOM.experience.experienceContainer
+    if (!experienceContainer) return
+
     const experienceBoxEl = document.createElement("div")
 
     experienceBoxEl.classList.add("experience")
 
-    experienceDataNames.forEach((name) => {
+    experienceDataNames.forEach((name: string) => {
         const input = document.createElement("input")
         input.classList.add("input-field")
         if (name == "startDate" || name == "endDate") {
@@ -191,8 +206,12 @@ const addExperienceToExperienceContainer = () => {
 
     experienceContainer.appendChild(experienceBoxEl)
 }
+type ContainerObject = {
+    inputField: HTMLInputElement;
+    container: HTMLElement;
+}
 
-const addElementToContainer = (obj, isContainer) => {
+const addElementToContainer = (obj: ContainerObject, isContainer: boolean) => {
     /*
         isContainer checks if element is skillEL or linksContainer
     */
@@ -203,7 +222,7 @@ const addElementToContainer = (obj, isContainer) => {
     if (inputValue) {
         inputValue = validateData(inputValue)
 
-        let el = new Object()
+        let el = new Object() as Node
         if (isContainer) {
             el = createContainerEl(inputValue)
         }
@@ -216,52 +235,75 @@ const addElementToContainer = (obj, isContainer) => {
     }
 }
 
+type ExperienceData = {
+    startDate: string
+    endDate: string
+    [key: string]: string
+}
 
 /* Custom consts */
 const createArrayFromExperience = () => {
     const experienceArray = document.getElementsByClassName("experience")
-    let newExperienceArray = []
+    const newExperienceArray: ExperienceData[] = []
 
-    for (let experience of experienceArray) {
-        const results = {}
+    for (const experience of experienceArray as unknown as HTMLCollectionOf<HTMLElement>) {
+        const results: Partial<ExperienceData> = {}
         experienceDataNames.forEach((name, i) => {
-            results[name] = name == "startDate" && name == "endDate" ? value : clearWhiteSpacesInData(experience.children[i].value)
+            const child = experience.children[i] as HTMLInputElement
+            const value = child.value.trim()
+
+            results[name] =
+                name === "startDate" || name === "endDate" ? value : clearWhiteSpacesInData(value)
         })
-        if (results["endDate"] < results["startDate"]) {
+        if (results["endDate"]! < results["startDate"]!) {
             throw new Error("End date is earlier than start date.")
         }
-        newExperienceArray.push(results)
+
+        newExperienceArray.push(results as ExperienceData)
     }
     return newExperienceArray
 }
 
-const createArrayFromSkills = () => {
-    const skillElsArray = employeeDOM.skills.container.children
-    const skillsArray = []
-    for (let el of skillElsArray) {
-        skillsArray.push(el.textContent)
+const createArrayFromSkills = (): string[] => {
+    const skillElsArray = employeeDOM.skills.container.children as HTMLCollectionOf<HTMLElement>
+    const skillsArray: string[] = []
+
+    for (const el of skillElsArray) {
+        if (el.textContent) {
+            skillsArray.push(el.textContent.trim())
+        }
     }
+
     return skillsArray
 }
 
-const createArrayFromLinks = () => {
-    const linkElsArray = employeeDOM.links.container.children
-    const linksArray = []
-    for (let el of linkElsArray) {
-        linksArray.push(el.textContent)
+const createArrayFromLinks = (): string[] => {
+    const linkElsArray: HTMLCollection = employeeDOM.links.container?.children ?? []
+    const linksArray: string[] = []
+
+    for (let el of Array.from(linkElsArray)) {
+        if (el instanceof HTMLElement && el.textContent !== null) {
+            linksArray.push(el.textContent.trim())
+        }
     }
+
     return linksArray
 }
 
-const createURLFromImageFile = async () => {
-    const input = employeeDOM.avatar.inputField
-    const ImageURL = await getBase64Image(input.files[0])
-    if (ImageURL) {
-        return ImageURL
-    }
-}
 
-const createEl = (value) => {
+const createURLFromImageFile = async (): Promise<string | undefined> => {
+    const input = employeeDOM.avatar.inputField as HTMLInputElement | null
+
+    if (!input || !input.files || input.files.length === 0) {
+        return undefined
+    }
+
+    const imageURL = await getBase64Image(input.files[0]) as string
+    return imageURL || undefined
+};
+
+
+const createEl = (value: string) => {
     const el = document.createElement("p")
 
     el.textContent = value
@@ -273,7 +315,7 @@ const createEl = (value) => {
     return el
 }
 
-const createContainerEl = (value) => {
+const createContainerEl = (value: string) => {
     const linkContainer = document.createElement("div")
     const linkEl = document.createElement("a")
     const deleteLinkBtn = document.createElement("input")
@@ -298,19 +340,20 @@ const createContainerEl = (value) => {
     return linkContainer
 }
 
-const getBase64Image = (file) => {
+const getBase64Image = (file: File) => {
     return new Promise((resolve) => {
         convertFileToBase64(file, resolve)
     })
 }
 
-const convertFileToBase64 = (file, callback) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
+const convertFileToBase64 = (file: File, callback: (result: string | ArrayBuffer | null) => void): void => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
     reader.onload = () => {
-        callback(reader.result)
-    }
-}
+        callback(reader.result);
+    };
+};
+
 
 /* Event listeners */
 addChange(employeeDOM.avatar.inputField, changeLabelAvatar)
