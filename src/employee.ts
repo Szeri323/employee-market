@@ -4,38 +4,61 @@ import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, g
 
 const collectionName = "employees"
 
+
+const avatar = {
+    label: "avatar-label",
+    inputField: "input-avatar"
+}
+type AvatarKeysT = keyof typeof avatar
+type AvatarValuesT = typeof avatar[AvatarKeysT]
+
+const personalData = {
+    inputFieldName: "input-name",
+    inputFieldSurname: "input-surname",
+    inputFieldBirthDate: "input-birth-date",
+    inputFieldEmail: "input-email",
+    inputFieldPhoneNumber: "input-phone-number"
+}
+type PersonalDataKeysT = keyof typeof personalData
+type PersonalDataValuesT = typeof personalData[PersonalDataKeysT]
+
+const experience = {
+    experienceContainer: "experience-container",
+    addExperienceBtn: "add-experience-btn"
+}
+type ExperienceKeysT = keyof typeof experience
+type ExperienceValuesT = typeof experience[ExperienceKeysT]
+
+const skills = {
+    inputField: "input-skill",
+    addBtn: "add-skill-btn",
+    container: "skills-container"
+}
+type SkillsKeysT = keyof typeof skills
+type SkillsValuesT = typeof skills[SkillsKeysT]
+
+const links = {
+    inputField: "input-link",
+    addBtn: "add-link-btn",
+    container: "links-container"
+}
+type LinksKeysT = keyof typeof links
+type LinksValuesT = typeof links[LinksKeysT]
+
+
 const employeeDomElementIds = {
     errorPreview: "error-preview",
     form: "employee-form",
-    avatar: {
-        label: "avatar-label",
-        inputField: "input-avatar"
-    },
-    personalData: {
-        inputFieldName: "input-name",
-        inputFieldSurname: "input-surname",
-        inputFieldBirthDate: "input-birth-date",
-        inputFieldEmail: "input-email",
-        inputFieldPhoneNumber: "input-phone-number"
-    },
-    experience: {
-        experienceContainer: "experience-container",
-        addExperienceBtn: "add-experience-btn"
-    },
-    skills: {
-        inputField: "input-skill",
-        addBtn: "add-skill-btn",
-        container: "skills-container"
-    },
-    links: {
-        inputField: "input-link",
-        addBtn: "add-link-btn",
-        container: "links-container"
-    }
+    avatar,
+    personalData,
+    experience,
+    skills,
+    links
 }
 
- type employeeDomElementIdsKeyT = keyof typeof employeeDomElementIds
- type employeeDomElementIdsValuesT = typeof employeeDomElementIds[employeeDomElementIdsKeyT]
+
+type employeeDomElementIdsKeysT = keyof typeof employeeDomElementIds
+type employeeDomElementIdsValuesT = typeof employeeDomElementIds[employeeDomElementIdsKeysT]
 
 const employeeDOM: RecursiveHTMLElement<typeof employeeDomElementIds> = getAllById(employeeDomElementIds)
 
@@ -98,7 +121,7 @@ const addEmployeeDataToDB = async (db: Firestore, userId: string | undefined) =>
 
 
 /* Filling form form doc */
-const fulfillFormFromDoc = (docSnapData: employeeDomElementIdsKeyT) => {
+const fulfillFormFromDoc = (docSnapData: employeeDomElementIdsValuesT) => {
     setAvatarFromDocSnapData(docSnapData["avatar"])
     setPersonalDataInputsFromDocSnapData(docSnapData["personalData"])
     setExperienceInputsFromDocSnapData(docSnapData["experience"])
@@ -106,7 +129,7 @@ const fulfillFormFromDoc = (docSnapData: employeeDomElementIdsKeyT) => {
     setLinksFromDocSnapData(docSnapData["links"])
 }
 
-const setAvatarFromDocSnapData = (avatar) => {
+const setAvatarFromDocSnapData = (avatar: AvatarValuesT) => {
     const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
 
@@ -118,14 +141,14 @@ const setAvatarFromDocSnapData = (avatar) => {
     label.appendChild(imageEl)
 }
 
-const setPersonalDataInputsFromDocSnapData = (personalData: string[]) => {
+const setPersonalDataInputsFromDocSnapData = (personalData: PersonalDataValuesT) => {
     const personalDataEl = employeeDOM.personalData
     Object.keys(personalDataEl).forEach((key, i) => {
         personalDataEl[key].value = personalData[personalDataNames[i]]
     })
 }
 
-const setExperienceInputsFromDocSnapData = (experience: string[]) => {
+const setExperienceInputsFromDocSnapData = (experience: ExperienceValuesT) => {
     if (!experience) {
         return
     }
@@ -143,7 +166,7 @@ const setExperienceInputsFromDocSnapData = (experience: string[]) => {
     }
 }
 
-const setSkillFromDocSnapData = (skills: string[]) => {
+const setSkillFromDocSnapData = (skills: SkillsValuesT) => {
     const skillsContainer = employeeDOM.skills.container
 
     for (let el of skills) {
@@ -153,7 +176,7 @@ const setSkillFromDocSnapData = (skills: string[]) => {
     }
 }
 
-const setLinksFromDocSnapData = (links: string[]) => {
+const setLinksFromDocSnapData = (links: LinksValuesT) => {
     const linksContainer = employeeDOM.links.container
 
     for (let el of links) {
@@ -264,7 +287,7 @@ const createArrayFromExperience = () => {
     return newExperienceArray
 }
 
-const createArrayFromSkills = (): string[] => {
+const createArrayFromSkills = () => {
     const skillElsArray = employeeDOM.skills.container.children as HTMLCollectionOf<HTMLElement>
     const skillsArray: string[] = []
 
@@ -277,7 +300,7 @@ const createArrayFromSkills = (): string[] => {
     return skillsArray
 }
 
-const createArrayFromLinks = (): string[] => {
+const createArrayFromLinks = () => {
     const linkElsArray: HTMLCollection = employeeDOM.links.container?.children ?? []
     const linksArray: string[] = []
 
@@ -291,7 +314,7 @@ const createArrayFromLinks = (): string[] => {
 }
 
 
-const createURLFromImageFile = async (): Promise<string | undefined> => {
+const createURLFromImageFile = async () => {
     const input = employeeDOM.avatar.inputField as HTMLInputElement | null
 
     if (!input || !input.files || input.files.length === 0) {
@@ -308,8 +331,9 @@ const createEl = (value: string) => {
 
     el.textContent = value
 
-    addDblClick(el, (event) => {
-        event.target.remove()
+    addDblClick(el, (event: MouseEvent) => {
+        const target = event.target as HTMLButtonElement
+        target.remove()
     })
 
     return el
@@ -331,8 +355,10 @@ const createContainerEl = (value: string) => {
     deleteLinkBtn.type = "button"
     deleteLinkBtn.value = "X"
 
-    addDblClick(deleteLinkBtn, (event) => {
-        event.target.parentElement.remove()
+    addDblClick(deleteLinkBtn, (event: MouseEvent) => {
+        const target = event.target as HTMLButtonElement
+        const parent = target.parentElement as HTMLElement
+        parent.remove()
     })
 
     linkContainer.appendChild(linkEl)
@@ -346,7 +372,7 @@ const getBase64Image = (file: File) => {
     })
 }
 
-const convertFileToBase64 = (file: File, callback: (result: string | ArrayBuffer | null) => void): void => {
+const convertFileToBase64 = (file: File, callback: (result: string | ArrayBuffer | null) => void) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {

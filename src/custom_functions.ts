@@ -1,36 +1,35 @@
-const getById = (el: string): HTMLElement | null => {
-    return document.getElementById(el)
-}
+const getById = (el: string) => document.getElementById(el)
 
-// zwraca obiekt o tej samej strukturze, ale z elementami DOM zamiast stringów
+// typ generyczny zwraca obiekt o tej samej strukturze, ale z elementami DOM zamiast stringów
 export type RecursiveHTMLElement<T> = {
     [K in keyof T]: T[K] extends string ? HTMLElement : RecursiveHTMLElement<T[K]>
 }
 
-export const getAllById = <T extends Record<string, any>>(obj: T): RecursiveHTMLElement<T> => {
+// wszystko w <> przed argumentem funkcji pozwala na wpisanie typu do argumentu (obj: T)
+export const getAllById = <T extends Record<string, any>>(obj: T) => {
     const results = {} as RecursiveHTMLElement<T>;
 
     Object.keys(obj).forEach((key) => {
-        const element = obj[key];
+        const element = obj[key]
         if (typeof element === "string") {
-            results[key as keyof T] = getById(element) as RecursiveHTMLElement<T>[keyof T];
+            results[key as keyof T] = getById(element) as RecursiveHTMLElement<T>[keyof T]
         } else if (typeof element === "object" && element !== null) {
-            results[key as keyof T] = getAllById(element) as RecursiveHTMLElement<T>[keyof T];
+            results[key as keyof T] = getAllById(element) as RecursiveHTMLElement<T>[keyof T]
         }
     });
 
-    return results;
-};
+    return results
+}
 
-export const clearInputField = (element) => { element.value = "" }
+export const clearInputField = (element: HTMLInputElement) => { element.value = "" }
 
-export const clearWhiteSpacesInData = data => data.trim()
+export const clearWhiteSpacesInData = (data: string) => data.trim()
 
-export const validateData = (data) => {
-    data = clearWhiteSpacesInData(data)
-    data = data.toLowerCase()
+export const validateData = (data: string) => {
+    // ty nadpisywałeś argument wchodzący do funkcji, taka mutacja zazwyczaj jest uważana za błąd
+    const preparedData = clearWhiteSpacesInData(data).toLowerCase()
     let newData = ""
-    for (let char of data) {
+    for (let char of preparedData) {
         if (char != " ") {
             newData += char
         }
@@ -38,7 +37,7 @@ export const validateData = (data) => {
     return newData
 }
 
-export const validateEmail = (email) => {
+export const validateEmail = (email: string) => {
     email = clearWhiteSpacesInData(email)
     const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!regExp.test(email)) {
@@ -47,9 +46,9 @@ export const validateEmail = (email) => {
     return email
 }
 
-export const addClick = (el, func) => { el.addEventListener("click", func) }
-export const addChange = (el, func) => { el.addEventListener("change", func) }
+export const addClick = (el: HTMLElement, func: () => void) => { el.addEventListener("click", func) }
+export const addChange = (el: HTMLElement, func: () => void) => { el.addEventListener("change", func) }
 
-export const addDblClick = (el, func) => {
+export const addDblClick = (el: HTMLElement, func: (this: HTMLElement, event: MouseEvent) => void) => {
     el.addEventListener("dblclick", func)
 }

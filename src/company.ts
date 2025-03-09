@@ -38,7 +38,7 @@ const getEmployeeWithParameterFromDB = async (db, collectionName) => {
 
 const getSkillsFromDB = async (db, collectionName) => {
     const employeeRef = collection(db, collectionName)
-    const SkillsSet = new Set()
+    const SkillsSet: Set<string> = new Set()
     const selectSkills = companyDOM.selectSkills
 
     const querySnapshot = await getDocs(employeeRef);
@@ -60,15 +60,16 @@ const getSkillsFromDB = async (db, collectionName) => {
 /* Form Management */
 const addItemToContainer = (select) => {
     const container = companyDOM.searchParams
-    const entryArray = []
+    const entryArray: string[] = []
     for (let el of container.children) {
-        entryArray.push(el.textContent)
+        entryArray.push(el.textContent || '')
     }
     const el = document.createElement("p")
     if (select.value && !entryArray.includes(select.value)) {
         el.textContent = select.value
-        addDblClick(el, (event) => {
-            event.target.remove()
+        addDblClick(el, (event: MouseEvent) => {
+            const target = event.target as HTMLButtonElement
+            target.remove()
         })
         container.appendChild(el)
         entryArray.push(select.value)
@@ -115,9 +116,9 @@ const createSkillsArrayFromContainer = () => {
     if (container.children.length == 0) {
         return null
     }
-    const skillsArray = []
+    const skillsArray: string[] = []
     for (let el of container.children) {
-        skillsArray.push(el.textContent)
+        skillsArray.push(el.textContent || '')
     }
     return skillsArray
 }
