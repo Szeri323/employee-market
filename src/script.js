@@ -1,9 +1,8 @@
-export { collectionName, db }
-
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
 import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
+import { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB } from "./company.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,28 +28,31 @@ const loggedOutView = document.getElementById("logged-out-view")
 
 const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
 const signOutBtn = document.getElementById("sign-out-btn")
-
-
+const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn")
 
 signInWithGoogleBtn.addEventListener("click", logInViaGoogle)
 signOutBtn.addEventListener("click", signOutFromApp)
+signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 
 /* Auth section */
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         // getDocFromDB(user.uid).then((docSnapData) => {
         //     fulfillFormFromDoc(docSnapData)
         // })
-        // .catch((error) => {
-        //     console.error(error.message)
-        // })
-
+        //     .catch((error) => {
+        //         console.error(error.message)
+        //     })
         // employeeForm.addEventListener("submit", (event) => {
         //     event.preventDefault()
         //     addEmployeeDataToDB(db, user.uid)
         // })
         // showLoggedInUserView()
+        getSkillsFromDB(db, collectionName)
+        searchForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            getEmployeeWithParameterFromDB(db, collectionName)
+        })
         showLoggedInCompanyView()
     }
     else {
@@ -92,7 +94,6 @@ async function getDocFromDB(userId) {
 
 
 /* Custom functions */
-
 function showLoggedInUserView() {
     hideView(loggedOutView)
     hideView(loggedInCompanyView)

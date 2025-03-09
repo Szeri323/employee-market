@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <div id="logged-out-view">
-            <button id="sign-in-google-btn" class="btn btn-sign-in-google">
+            <button id="sign-in-google-btn" class="btn btn-google">
                 <img class="sign-in-icon" src="./src/icons/google-brands.svg" alt="">
                 Zaloguj się z Google
             </button>
@@ -24,7 +24,8 @@
 
         <div id="logged-in-user-view">
             <button id="sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
-            <p>Cześć jesteś zalogowany jako Użytkownik!</p>
+            <h2>Cześć jesteś zalogowany jako Użytkownik!</h2>
+            <p id="error-preview" class="error-preview"></p>
 
             <form id="employee-form" class="data-container">
                 <div class="employee-data-header">
@@ -40,9 +41,9 @@
                         <p>Dane personalne</p>
                         <input id="input-name" class="input-field" type="text" placeholder="Imię">
                         <input id="input-surname" class="input-field" type="text" placeholder="Nazwisko">
-                        <input id="input-birth-date" class="input-field" type="date" placeholder="Data urodzenia">
+                        <input id="input-birth-date" class="input-field" type="date">
                         <input id="input-email" class="input-field" type="email" placeholder="Email">
-                        <input id="input-phone-number" class="input-field" type="number" placeholder="Number Telefonu">
+                        <input id="input-phone-number" class="input-field" type="number" placeholder="Number telefonu">
                     </div>
                 </div>
 
@@ -53,11 +54,10 @@
                         <div class="experience">
                             <input class="input-field input-field-job-title" type="text" placeholder="Nazwa stanowiska">
                             <input class="input-field input-field-company-name" type="text" placeholder="Nazwa firmy">
-                            <input class="input-field input-field-start-date" type="date"
-                                placeholder="Data rozpoczęcia">
-                            <input class="input-field input-field-end-date" type="date" placeholder="Data zakończenia">
-                            <input class="input-field input-field-description" type="text"
-                                placeholder="Opis stanowiska">
+                            <input class="input-field input-field-start-date" type="date">
+                            <input class="input-field input-field-end-date" type="date">
+                            <textarea class="input-field input-field-description" maxlength="500"
+                                placeholder="Opis stanowiska"></textarea>
                         </div>
                     </div>
                     <input id="add-experience-btn" class="btn btn-add-experience" type="button" value="+">
@@ -96,118 +96,43 @@
             <div class="results"></div> -->
 
         </div>
+
         <div id="logged-in-company-view">
-            <button id="sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
-            <p>Cześć jesteś zalogowany jako Firma!</p>
+            <button id="company-view-sign-out-btn" class="btn btn-sign-out">Wyloguj się</button>
+            <h2>Cześć jesteś zalogowany jako Firma!</h2>
 
 
             <form id="search-form" class="data-container data-container-search">
                 <label for="select-skills-search">Język programowania:</label>
                 <select id="select-skills-search" class="input-field" name="skills">
-                    <option value="html">html</option>
-                    <option value="css">css</option>
-                    <option value="javascript">javascript</option>
+                    <option value="">Wybierz umiejętności</option>
                 </select>
-                <div id="skills-conatiner-search"></div>
 
-                <!-- <label for="language">Język:</label>
-                <select id="language" class="input-field" name="language">
-                    <option value="1">Angielski</option>
-                    <option value="2">Niemiecki</option>
-                    <option value="3">Rosyjski</option>
-                    <option value="4">Hiszpański</option>
+                <label for="select-languages-search">Język:</label>
+                <select id="select-languages-search" class="input-field" name="language">
+                    <option value="language-1">Angielski</option>
+                    <option value="language-2">Niemiecki</option>
+                    <option value="language-3">Rosyjski</option>
+                    <option value="language-4">Hiszpański</option>
                 </select>
-                <label for="language-level">Poziom jezyka:</label>
-                <select id="language-level" class="input-field">
-                    <option value="1">A1</option>
-                    <option value="2">A2</option>
-                    <option value="3">B1</option>
-                    <option value="4">B2</option>
-                    <option value="5">C1</option>
-                    <option value="6">C2</option>
+                <label for="select-language-level-search">Poziom jezyka:</label>
+                <select id="select-language-level-search" class="input-field">
+                    <option value="language-level-1">A1</option>
+                    <option value="language-level-2">A2</option>
+                    <option value="language-level-3">B1</option>
+                    <option value="language-level-4">B2</option>
+                    <option value="language-level-5">C1</option>
+                    <option value="language-level-6">C2</option>
                 </select>
-                <div id="languages-container-search"></div> -->
-                <button id="search-btn" class="btn">Szukuj kandydatów</button>
+
+                <div id="search-params-container" class="search-params"></div>
+
+                <button id="search-btn" class="btn">Szukaj kandydatów</button>
             </form>
 
             <div id="results-search" class="results">
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- <div class="search">
-                <input class="search-bar" placeholder="Czego szukasz?">
-                <div class="search-icon-box">
-                    <img class="search-icon" src="./src/icons/magnifying-glass-solid.svg" alt="">
-                </div>
             </div>
-
-            <div class="results">
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-box">
-                    <div class="avatar"></div>
-                    <div class="user-data">
-                        <p>Marek Antoni</p>
-                        <div class="search-skills">
-                            <span>html</span>
-                            <span>css</span>
-                            <span>JavaScript</span>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
 
         </div>
 
