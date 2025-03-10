@@ -55,3 +55,8 @@ git commit -m "feat(auth): add OAuth support" \
             -m "Fixes #123"
 
 ```
+albo przez:
+```git add .``` - dodaje wszystkie pliki do commita
+```git commit```
+i edytujemy w vimie
+wychodzimy przez ```[esp]:wq``` - zapis i wyjście z edycji
