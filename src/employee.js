@@ -1,8 +1,5 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
-import { collection, doc, setDoc } from "firebase/firestore"
 import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
-
-const collectionName = "employees"
 
 const employeeDomElementIds = {
     errorPreview: "error-preview",
@@ -42,13 +39,10 @@ const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", 
 const employeeForm = employeeDOM.form
 
 /* DB operations */
-const addEmployeeDataToDB = async (db, userId) => {
+const addEmployeeDataToDB = async (userId) => {
     try {
-        const employeeRef = collection(db, collectionName)
-        const docRef = doc(employeeRef, userId)
-
         let ImageURL = ""
-        if(employeeDOM.avatar.label.children[0].src) {
+        if (employeeDOM.avatar.label.children[0].src) {
             ImageURL = employeeDOM.avatar.label.children[0].src
         }
         else {
@@ -76,13 +70,10 @@ const addEmployeeDataToDB = async (db, userId) => {
         const skillsArray = createArrayFromSkills()
         const linksArray = createArrayFromLinks()
 
-        await setDoc(docRef, {
-            avatar: ImageURL,
-            personalData: results,
-            experience: experienceArray,
-            skills: skillsArray,
-            links: linksArray
-        })
+        const { setDocInDB } = await import("./db_operations")
+
+        setDocInDB(db, userId, ImageURL, results, experienceArray, skillsArray, linksArray)
+
         console.log("Doc created")
         employeeDOM.errorPreview.textContent = ""
     }
@@ -105,7 +96,7 @@ const fulfillFormFromDoc = (docSnapData) => {
 const setAvatarFromDocSnapData = (avatar) => {
     const label = employeeDOM.avatar.label
     const imageEl = document.createElement("img")
-    
+
     const imageSource = avatar
 
     imageEl.src = imageSource
@@ -165,7 +156,7 @@ const changeLabelAvatar = async () => {
     const label = employeeDOM.avatar.label
 
     const imageEl = document.createElement("img")
-    
+
     const imageSource = await getBase64Image(inputField.files[0])
 
     imageEl.src = imageSource

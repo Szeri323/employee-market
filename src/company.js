@@ -1,6 +1,4 @@
-export { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB }
-import { collection, query, where, getDocs, and } from "firebase/firestore"
-import { addChange, addDblClick, getAllById } from "./custom_functions"
+import { addChange, addDblClick, addSubmit, getAllById } from "./custom_functions"
 
 const companyDOMElementIds = {
     searchForm: "search-form",
@@ -21,28 +19,29 @@ const searchForm = companyDOM["searchForm"]
 const selects = [companyDOM.selectSkills, companyDOM.selectLanguages, companyDOM.selectLanguageLevel]
 
 /* DB operations */
-const getEmployeeWithParameterFromDB = async (db, collectionName) => {
-    const employeeRef = collection(db, collectionName)
+const getEmployeeWithParameterFromDB = async () => {
     const skillsArray = createSkillsArrayFromContainer()
     const container = companyDOM.results.container
 
-    const q = query(employeeRef, where("skills", "array-contains-any", skillsArray))
-
     container.innerHTML = ""
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-        addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
-    })
+    if (skillsArray) {
+        const { getDocsWithQueryFromDB } = await import("./db_operations")
+        const queryParams = ["skills", "array-contains-any", skillsArray]
+        const querySnapshot = await getDocsWithQueryFromDB(queryParams);
+        querySnapshot.forEach((doc) => {
+            addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
+        })
+    }
 }
 
-const getSkillsFromDB = async (db, collectionName) => {
-    const employeeRef = collection(db, collectionName)
+export const getSkillsFromDB = async () => {
     const SkillsSet = new Set()
     const selectSkills = companyDOM.selectSkills
 
-    const querySnapshot = await getDocs(employeeRef);
-    querySnapshot.forEach((doc) => {
+    const { getDocsFromDB } = await import("./db_operations")
+
+    const docsSnapshot = await getDocsFromDB();
+    docsSnapshot.forEach((doc) => {
         doc.data()["skills"].forEach((skill) => {
             SkillsSet.add(skill)
         })
@@ -55,7 +54,6 @@ const getSkillsFromDB = async (db, collectionName) => {
         selectSkills.appendChild(skillEl)
     })
 }
-
 
 /* Form Management */
 const addItemToContainer = (select) => {
@@ -126,4 +124,8 @@ const createSkillsArrayFromContainer = () => {
 /* Event listeners */
 selects.forEach((select) => {
     addChange(select, addItemToContainer.bind(null, select))
+})
+addSubmit(searchForm, (event) => {
+    event.preventDefault()
+    getEmployeeWithParameterFromDB()
 })

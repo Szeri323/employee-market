@@ -1,26 +1,8 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
-import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
+import { auth, google_provider } from "./config.js";
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
-import { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB } from "./company.js";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCAUD9TOeu4sqqUpO9q20VZftq--5N13mc",
-    authDomain: "employee-market.firebaseapp.com",
-    projectId: "employee-market",
-    storageBucket: "employee-market.firebasestorage.app",
-    messagingSenderId: "205123514040",
-    appId: "1:205123514040:web:4dadc1bdd81ac056790e4d"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth()
-const google_provider = new GoogleAuthProvider()
-const db = getFirestore(app)
-
-const collectionName = "employees"
+import { getSkillsFromDB } from "./company.js";
+import { addClick, addSubmit } from "./custom_functions.js";
 
 const loggedInUserView = document.getElementById("logged-in-user-view")
 const loggedInCompanyView = document.getElementById("logged-in-company-view")
@@ -30,37 +12,31 @@ const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
 const signOutBtn = document.getElementById("sign-out-btn")
 const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn")
 
-signInWithGoogleBtn.addEventListener("click", logInViaGoogle)
-signOutBtn.addEventListener("click", signOutFromApp)
-signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 
 /* Auth section */
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // getDocFromDB(user.uid).then((docSnapData) => {
-        //     fulfillFormFromDoc(docSnapData)
-        // })
-        //     .catch((error) => {
-        //         console.error(error.message)
-        //     })
-        // employeeForm.addEventListener("submit", (event) => {
-        //     event.preventDefault()
-        //     addEmployeeDataToDB(db, user.uid)
-        // })
-        // showLoggedInUserView()
-        getSkillsFromDB(db, collectionName)
-        searchForm.addEventListener("submit", (event) => {
-            event.preventDefault()
-            getEmployeeWithParameterFromDB(db, collectionName)
+        const { getDocFromDB } = await import("./db_operations.js")
+        getDocFromDB(user.uid).then((docSnapData) => {
+            fulfillFormFromDoc(docSnapData)
         })
-        showLoggedInCompanyView()
+            .catch((error) => {
+                console.error(error.message)
+            })
+        employeeForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            addEmployeeDataToDB(db, user.uid)
+        })
+        showLoggedInUserView()
+        // getSkillsFromDB()
+        // showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()
     }
 })
 
-function signOutFromApp() {
+const signOutFromApp = () => {
     signOut(auth)
         .then(() => {
         })
@@ -69,7 +45,7 @@ function signOutFromApp() {
         })
 }
 
-function logInViaGoogle() {
+const logInViaGoogle = () => {
     signInWithPopup(auth, google_provider)
         .then(() => {
         })
@@ -78,43 +54,35 @@ function logInViaGoogle() {
         })
 }
 
-async function getDocFromDB(userId) {
-    const employeeRef = collection(db, collectionName)
-    const docRef = doc(employeeRef, userId)
-
-    const docSnap = await getDoc(docRef)
-
-    if (docSnap.exists()) {
-        return docSnap.data()
-    }
-    else {
-        console.log("Doc does not exists.")
-    }
-}
-
 
 /* Custom functions */
-function showLoggedInUserView() {
+const showLoggedInUserView = () => {
     hideView(loggedOutView)
     hideView(loggedInCompanyView)
     showView(loggedInUserView)
 }
-function showLoggedInCompanyView() {
+const showLoggedInCompanyView = () => {
     hideView(loggedOutView)
     hideView(loggedInUserView)
     showView(loggedInCompanyView)
 }
 
-function showLoggedOutView() {
+const showLoggedOutView = () => {
     hideView(loggedInUserView)
     hideView(loggedInCompanyView)
     showView(loggedOutView)
 }
 
-function showView(view) {
+const showView = (view) => {
     view.style.display = "block"
 }
 
-function hideView(view) {
+const hideView = (view) => {
     view.style.display = "none"
 }
+
+
+/* Event Listeners */
+addClick(signInWithGoogleBtn, logInViaGoogle)
+addClick(signOutBtn, signOutFromApp)
+addClick(signOutBtnCompanyView, signOutFromApp)
