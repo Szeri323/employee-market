@@ -1,8 +1,6 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
 
-const collectionName = "employees"
-
 const employeeDomElementIds = {
     errorPreview: "error-preview",
     form: "employee-form",
@@ -41,7 +39,7 @@ const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", 
 const employeeForm = employeeDOM.form
 
 /* DB operations */
-const addEmployeeDataToDB = async (db, userId) => {
+const addEmployeeDataToDB = async (userId) => {
     try {
         let ImageURL = ""
         if (employeeDOM.avatar.label.children[0].src) {

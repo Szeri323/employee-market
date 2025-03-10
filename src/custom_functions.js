@@ -33,7 +33,7 @@ export const validateData = (data) => {
 export const validateEmail = (email) => {
     email = clearWhiteSpacesInData(email)
     const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if(!regExp.test(email)) {
+    if (!regExp.test(email)) {
         throw new Error("Invalid email.")
     }
     return email
@@ -41,7 +41,5 @@ export const validateEmail = (email) => {
 
 export const addClick = (el, func) => { el.addEventListener("click", func) }
 export const addChange = (el, func) => { el.addEventListener("change", func) }
-
-export const addDblClick = (el, func) => {
-    el.addEventListener("dblclick", func)
-}
+export const addDblClick = (el, func) => { el.addEventListener("dblclick", func) }
+export const addSubmit = (el, func) => { el.addEventListener("submit", func)}

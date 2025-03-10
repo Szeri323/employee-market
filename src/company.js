@@ -1,5 +1,4 @@
-export { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB }
-import { addChange, addDblClick, getAllById } from "./custom_functions"
+import { addChange, addDblClick, addSubmit, getAllById } from "./custom_functions"
 
 const companyDOMElementIds = {
     searchForm: "search-form",
@@ -20,7 +19,7 @@ const searchForm = companyDOM["searchForm"]
 const selects = [companyDOM.selectSkills, companyDOM.selectLanguages, companyDOM.selectLanguageLevel]
 
 /* DB operations */
-const getEmployeeWithParameterFromDB = async (db) => {
+const getEmployeeWithParameterFromDB = async () => {
     const skillsArray = createSkillsArrayFromContainer()
     const container = companyDOM.results.container
 
@@ -28,20 +27,20 @@ const getEmployeeWithParameterFromDB = async (db) => {
     if (skillsArray) {
         const { getDocsWithQueryFromDB } = await import("./db_operations")
         const queryParams = ["skills", "array-contains-any", skillsArray]
-        const querySnapshot = await getDocsWithQueryFromDB(db, queryParams);
+        const querySnapshot = await getDocsWithQueryFromDB(queryParams);
         querySnapshot.forEach((doc) => {
             addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
         })
     }
 }
 
-const getSkillsFromDB = async (db) => {
+export const getSkillsFromDB = async () => {
     const SkillsSet = new Set()
     const selectSkills = companyDOM.selectSkills
 
     const { getDocsFromDB } = await import("./db_operations")
-
-    const docsSnapshot = await getDocsFromDB(db);
+    console.log("here");
+    const docsSnapshot = await getDocsFromDB();
     docsSnapshot.forEach((doc) => {
         doc.data()["skills"].forEach((skill) => {
             SkillsSet.add(skill)
@@ -55,7 +54,6 @@ const getSkillsFromDB = async (db) => {
         selectSkills.appendChild(skillEl)
     })
 }
-
 
 /* Form Management */
 const addItemToContainer = (select) => {
@@ -126,4 +124,8 @@ const createSkillsArrayFromContainer = () => {
 /* Event listeners */
 selects.forEach((select) => {
     addChange(select, addItemToContainer.bind(null, select))
+})
+addSubmit(searchForm, (event) => {
+    event.preventDefault()
+    getEmployeeWithParameterFromDB()
 })
