@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
-import { getFirestore, collection, doc, getDoc } from "firebase/firestore"
+import { getFirestore } from "firebase/firestore"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
 import { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB } from "./company.js";
 
@@ -14,13 +14,13 @@ const firebaseConfig = {
     appId: "1:205123514040:web:4dadc1bdd81ac056790e4d"
 };
 
+const collectionName = "employees"
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth()
 const google_provider = new GoogleAuthProvider()
 const db = getFirestore(app)
-
-const collectionName = "employees"
 
 const loggedInUserView = document.getElementById("logged-in-user-view")
 const loggedInCompanyView = document.getElementById("logged-in-company-view")
@@ -35,9 +35,10 @@ signOutBtn.addEventListener("click", signOutFromApp)
 signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 
 /* Auth section */
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // getDocFromDB(user.uid).then((docSnapData) => {
+        // const { getDocFromDB } = await import("./db_operations.js")
+        // getDocFromDB(db, user.uid).then((docSnapData) => {
         //     fulfillFormFromDoc(docSnapData)
         // })
         //     .catch((error) => {
@@ -78,19 +79,7 @@ function logInViaGoogle() {
         })
 }
 
-async function getDocFromDB(userId) {
-    const employeeRef = collection(db, collectionName)
-    const docRef = doc(employeeRef, userId)
 
-    const docSnap = await getDoc(docRef)
-
-    if (docSnap.exists()) {
-        return docSnap.data()
-    }
-    else {
-        console.log("Doc does not exists.")
-    }
-}
 
 
 /* Custom functions */
