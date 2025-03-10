@@ -1,26 +1,9 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+import { auth, google_provider } from "./config.js";
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
-import { searchForm, getEmployeeWithParameterFromDB, getSkillsFromDB } from "./company.js";
+import { getSkillsFromDB } from "./company.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCAUD9TOeu4sqqUpO9q20VZftq--5N13mc",
-    authDomain: "employee-market.firebaseapp.com",
-    projectId: "employee-market",
-    storageBucket: "employee-market.firebasestorage.app",
-    messagingSenderId: "205123514040",
-    appId: "1:205123514040:web:4dadc1bdd81ac056790e4d"
-};
 
-const collectionName = "employees"
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth()
-const google_provider = new GoogleAuthProvider()
-const db = getFirestore(app)
 
 const loggedInUserView = document.getElementById("logged-in-user-view")
 const loggedInCompanyView = document.getElementById("logged-in-company-view")
@@ -37,24 +20,20 @@ signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 /* Auth section */
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // const { getDocFromDB } = await import("./db_operations.js")
-        // getDocFromDB(db, user.uid).then((docSnapData) => {
-        //     fulfillFormFromDoc(docSnapData)
-        // })
-        //     .catch((error) => {
-        //         console.error(error.message)
-        //     })
-        // employeeForm.addEventListener("submit", (event) => {
-        //     event.preventDefault()
-        //     addEmployeeDataToDB(db, user.uid)
-        // })
-        // showLoggedInUserView()
-        getSkillsFromDB(db, collectionName)
-        searchForm.addEventListener("submit", (event) => {
-            event.preventDefault()
-            getEmployeeWithParameterFromDB(db, collectionName)
+        const { getDocFromDB } = await import("./db_operations.js")
+        getDocFromDB(user.uid).then((docSnapData) => {
+            fulfillFormFromDoc(docSnapData)
         })
-        showLoggedInCompanyView()
+            .catch((error) => {
+                console.error(error.message)
+            })
+        employeeForm.addEventListener("submit", (event) => {
+            event.preventDefault()
+            addEmployeeDataToDB(db, user.uid)
+        })
+        showLoggedInUserView()
+        // getSkillsFromDB()
+        // showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()
@@ -78,8 +57,6 @@ function logInViaGoogle() {
             console.error(error.message)
         })
 }
-
-
 
 
 /* Custom functions */

@@ -1,8 +1,9 @@
 import { collection, doc, getDoc, setDoc, query, where, getDocs } from "firebase/firestore"
+import { db } from "./config"
 
 const collectionName = "employees"
 
-export const getDocFromDB = async (db, userId) => {
+export const getDocFromDB = async (userId) => {
     const employeeRef = collection(db, collectionName)
     const docRef = doc(employeeRef, userId)
 
@@ -16,7 +17,7 @@ export const getDocFromDB = async (db, userId) => {
     }
 }
 
-export const setDocInDB = async (db, userId, ImageURL, results, experienceArray, skillsArray, linksArray) => {
+export const setDocInDB = async (userId, ImageURL, results, experienceArray, skillsArray, linksArray) => {
     const employeeRef = collection(db, collectionName)
     const docRef = doc(employeeRef, userId)
 
@@ -36,13 +37,13 @@ const buildQuery = (ref, queryParams) => {
     return query(ref, where(collectionField, modifier, array))
 }
 
-export const getDocsWithQueryFromDB = async (db, queryParams) => {
+export const getDocsWithQueryFromDB = async (queryParams) => {
     const employeeRef = collection(db, collectionName)
     const q = buildQuery(employeeRef, queryParams)
     return await getDocs(q)
 }
 
-export const getDocsFromDB = async (db) => {
+export const getDocsFromDB = async () => {
     const employeeRef = collection(db, collectionName)
     return await getDocs(employeeRef)
 }
