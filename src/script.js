@@ -2,8 +2,7 @@ import { auth, google_provider } from "./config.js";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
 import { getSkillsFromDB } from "./company.js";
-
-
+import { addClick, addSubmit } from "./custom_functions.js";
 
 const loggedInUserView = document.getElementById("logged-in-user-view")
 const loggedInCompanyView = document.getElementById("logged-in-company-view")
@@ -13,9 +12,6 @@ const signInWithGoogleBtn = document.getElementById("sign-in-google-btn")
 const signOutBtn = document.getElementById("sign-out-btn")
 const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn")
 
-signInWithGoogleBtn.addEventListener("click", logInViaGoogle)
-signOutBtn.addEventListener("click", signOutFromApp)
-signOutBtnCompanyView.addEventListener("click", signOutFromApp)
 
 /* Auth section */
 onAuthStateChanged(auth, async (user) => {
@@ -40,7 +36,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 })
 
-function signOutFromApp() {
+const signOutFromApp = () => {
     signOut(auth)
         .then(() => {
         })
@@ -49,7 +45,7 @@ function signOutFromApp() {
         })
 }
 
-function logInViaGoogle() {
+const logInViaGoogle = () => {
     signInWithPopup(auth, google_provider)
         .then(() => {
         })
@@ -60,27 +56,33 @@ function logInViaGoogle() {
 
 
 /* Custom functions */
-function showLoggedInUserView() {
+const showLoggedInUserView = () => {
     hideView(loggedOutView)
     hideView(loggedInCompanyView)
     showView(loggedInUserView)
 }
-function showLoggedInCompanyView() {
+const showLoggedInCompanyView = () => {
     hideView(loggedOutView)
     hideView(loggedInUserView)
     showView(loggedInCompanyView)
 }
 
-function showLoggedOutView() {
+const showLoggedOutView = () => {
     hideView(loggedInUserView)
     hideView(loggedInCompanyView)
     showView(loggedOutView)
 }
 
-function showView(view) {
+const showView = (view) => {
     view.style.display = "block"
 }
 
-function hideView(view) {
+const hideView = (view) => {
     view.style.display = "none"
 }
+
+
+/* Event Listeners */
+addClick(signInWithGoogleBtn, logInViaGoogle)
+addClick(signOutBtn, signOutFromApp)
+addClick(signOutBtnCompanyView, signOutFromApp)

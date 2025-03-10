@@ -39,7 +39,7 @@ export const getSkillsFromDB = async () => {
     const selectSkills = companyDOM.selectSkills
 
     const { getDocsFromDB } = await import("./db_operations")
-    console.log("here");
+
     const docsSnapshot = await getDocsFromDB();
     docsSnapshot.forEach((doc) => {
         doc.data()["skills"].forEach((skill) => {
