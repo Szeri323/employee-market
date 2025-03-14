@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, setDoc, query, where, getDocs } from "firebase/firestore"
+import { collection, doc, getDoc, setDoc, query, where, orderBy, getDocs } from "firebase/firestore"
 import { db } from "./config"
 
 const collectionName = "employees"
@@ -30,16 +30,24 @@ export const setDocInDB = async (userId, ImageURL, results, experienceArray, ski
     })
 }
 
-const buildQuery = (ref, queryParams) => {
-    const collectionField = queryParams[0]
-    const modifier = queryParams[1]
-    const array = queryParams[2]
-    return query(ref, where(collectionField, modifier, array))
+const buildWhere = (whereParams) => {
+    const collectionField = whereParams[0]
+    const modifier = whereParams[1]
+    const array = whereParams[2]
+    return where(collectionField, modifier, array)
 }
 
-export const getDocsWithQueryFromDB = async (queryParams) => {
+const buildOrder = (orderParams) => {
+    return orderBy(orderParams[0], orderParams[1])
+}
+
+const buildQuery = (ref, whereParams, orderParams) => {
+    return query(ref, buildWhere(whereParams))
+}
+
+export const getDocsWithQueryFromDB = async (whereParams, orderParams) => {
     const employeeRef = collection(db, collectionName)
-    const q = buildQuery(employeeRef, queryParams)
+    const q = buildQuery(employeeRef, whereParams, orderParams)
     return await getDocs(q)
 }
 
