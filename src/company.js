@@ -1,4 +1,4 @@
-import { addChange, addDblClick, addSubmit, getAllById } from "./custom_functions"
+import { addChange, addDblClick, addSubmit, getAllById, prepare } from "./custom_functions"
 
 const companyDOMElementIds = {
     searchForm: "search-form",
@@ -26,8 +26,9 @@ const getEmployeeWithParameterFromDB = async () => {
     container.innerHTML = ""
     if (skillsArray) {
         const { getDocsWithQueryFromDB } = await import("./db_operations")
-        const queryParams = ["skills", "array-contains-any", skillsArray]
-        const querySnapshot = await getDocsWithQueryFromDB(queryParams);
+        const whereParams = ["skills", "array-contains-any", skillsArray]
+        const orderParams = ["avatar", "desc"]
+        const querySnapshot = await getDocsWithQueryFromDB(whereParams, orderParams);
         querySnapshot.forEach((doc) => {
             addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
         })
@@ -76,34 +77,38 @@ const addItemToContainer = (select) => {
 const addEmployeeToResultsContainer = (employeeAvatar, employeeName, employeeSkills) => {
     const container = companyDOM.results.container
 
-    const employeeBox = document.createElement("div")
-    const avatar = document.createElement("img")
-    const data = document.createElement("div")
-    const name = document.createElement("h3")
-    const skills = document.createElement("div")
-
-    employeeBox.classList.add("user-box")
-    avatar.classList.add("avatar")
-    data.classList.add("user-data")
-    skills.classList.add("user-skills")
-
-    avatar.src = `${employeeAvatar}`
-
-    name.textContent = employeeName
-
-    employeeSkills.forEach((skill) => {
-        const span = document.createElement("span")
-        span.textContent = skill
-        skills.appendChild(span)
+    const avatar = prepare("img", {
+        avatar: "avatar",
+        src: employeeAvatar
     })
 
-    data.appendChild(name)
-    data.appendChild(skills)
+    const name = prepare("h3", {
+        textContent: employeeName
+    })
 
-    employeeBox.appendChild(avatar)
-    employeeBox.appendChild(data)
+    const skillArray = employeeSkills.map((skill) =>
+        prepare("span", {
+            textContent: skill
+        })
+    )
 
-    container.appendChild(employeeBox)
+    const skills = prepare("div", {
+        children: skillArray
+    })
+
+    const data = prepare("div", {
+        classes: "user-data",
+        children: [name, skills]
+    })
+
+    const employeeBox = parent("div", {
+        children: [data, avatar]
+    })
+
+    parent(container, {
+        children: employeeBox
+    })
+
 }
 
 

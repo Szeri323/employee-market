@@ -16,20 +16,20 @@ const signOutBtnCompanyView = document.getElementById("company-view-sign-out-btn
 /* Auth section */
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const { getDocFromDB } = await import("./db_operations.js")
-        getDocFromDB(user.uid).then((docSnapData) => {
-            fulfillFormFromDoc(docSnapData)
-        })
-            .catch((error) => {
-                console.error(error.message)
-            })
-        employeeForm.addEventListener("submit", (event) => {
-            event.preventDefault()
-            addEmployeeDataToDB(db, user.uid)
-        })
-        showLoggedInUserView()
-        // getSkillsFromDB()
-        // showLoggedInCompanyView()
+        // const { getDocFromDB } = await import("./db_operations.js")
+        // getDocFromDB(user.uid).then((docSnapData) => {
+        //     fulfillFormFromDoc(docSnapData)
+        // })
+        //     .catch((error) => {
+        //         console.error(error.message)
+        //     })
+        // employeeForm.addEventListener("submit", (event) => {
+        //     event.preventDefault()
+        //     addEmployeeDataToDB(db, user.uid)
+        // })
+        // showLoggedInUserView()
+        getSkillsFromDB()
+        showLoggedInCompanyView()
     }
     else {
         showLoggedOutView()

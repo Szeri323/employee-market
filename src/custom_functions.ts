@@ -42,4 +42,38 @@ export const validateEmail = (email) => {
 export const addClick = (el, func) => { el.addEventListener("click", func) }
 export const addChange = (el, func) => { el.addEventListener("change", func) }
 export const addDblClick = (el, func) => { el.addEventListener("dblclick", func) }
-export const addSubmit = (el, func) => { el.addEventListener("submit", func)}
+export const addSubmit = (el, func) => { el.addEventListener("submit", func) }
+
+export const prepare = (node: HTMLElement | HTMLImageElement | string, options?: {
+    classes?: string[] | string
+    src?: string
+    href?: string
+    text?: string
+    children?: HTMLElement[]
+}) => {
+    const el = (typeof node === "string") ? document.createElement(node) : node
+
+    if (Array.isArray(options?.children)) {
+        const classes = options.classes as string[]
+        classes.forEach((className) => {
+            el.classList.add(className)
+        })
+    }
+    else {
+        el.classList.add(options?.classes as string)
+    }
+    if (el instanceof HTMLImageElement && options?.src) {
+        el.src = options.src
+    }
+    if (el instanceof HTMLAnchorElement && options?.href) {
+        el.href = options.href
+    }
+    if (options?.text) {
+        el.textContent = options.text
+    }
+    options?.children?.forEach((child) => {
+        el.appendChild(child)
+    })
+
+    return el
+}
