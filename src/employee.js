@@ -1,5 +1,5 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
-import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
+import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, validatePhoneNumber, getAllById, addChange, addClick, addDblClick } from "./custom_functions"
 
 const employeeDomElementIds = {
     errorPreview: "error-preview",
@@ -60,6 +60,9 @@ const addEmployeeDataToDB = async (userId) => {
             }
             else if (itemName == "birthDate") {
                 results[itemName] = value
+            }
+            else if (itemName == "phoneNumber") {
+                results[itemName] = validatePhoneNumber(value)
             }
             else {
                 results[itemName] = clearWhiteSpacesInData(value)
