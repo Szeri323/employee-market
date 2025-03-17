@@ -26,8 +26,9 @@ const getEmployeeWithParameterFromDB = async () => {
     container.innerHTML = ""
     if (skillsArray) {
         const { getDocsWithQueryFromDB } = await import("./db_operations")
-        const queryParams = ["skills", "array-contains-any", skillsArray]
-        const querySnapshot = await getDocsWithQueryFromDB(queryParams);
+        const whereParams = ["skills", "array-contains-any", skillsArray]
+        const orderParams = ["avatar", "desc"]
+        const querySnapshot = await getDocsWithQueryFromDB(whereParams, orderParams);
         querySnapshot.forEach((doc) => {
             addEmployeeToResultsContainer(doc.data()["avatar"], doc.data()["personalData"]["name"], doc.data()["skills"])
         })
