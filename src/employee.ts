@@ -8,7 +8,7 @@ const collectionName = "employees"
 const avatar = {
     label: "avatar-label",
     inputField: "input-avatar"
-}
+} as const
 type AvatarKeysT = keyof typeof avatar
 type AvatarValuesT = typeof avatar[AvatarKeysT]
 
@@ -18,14 +18,14 @@ const personalData = {
     inputFieldBirthDate: "input-birth-date",
     inputFieldEmail: "input-email",
     inputFieldPhoneNumber: "input-phone-number"
-}
+} as const
 type PersonalDataKeysT = keyof typeof personalData
 type PersonalDataValuesT = typeof personalData[PersonalDataKeysT]
 
 const experience = {
     experienceContainer: "experience-container",
     addExperienceBtn: "add-experience-btn"
-}
+} as const
 type ExperienceKeysT = keyof typeof experience
 type ExperienceValuesT = typeof experience[ExperienceKeysT]
 
@@ -33,7 +33,7 @@ const skills = {
     inputField: "input-skill",
     addBtn: "add-skill-btn",
     container: "skills-container"
-}
+} as const
 type SkillsKeysT = keyof typeof skills
 type SkillsValuesT = typeof skills[SkillsKeysT]
 
@@ -41,7 +41,7 @@ const links = {
     inputField: "input-link",
     addBtn: "add-link-btn",
     container: "links-container"
-}
+} as const
 type LinksKeysT = keyof typeof links
 type LinksValuesT = typeof links[LinksKeysT]
 
@@ -54,7 +54,7 @@ const employeeDomElementIds = {
     experience,
     skills,
     links
-}
+} as const
 
 
 type employeeDomElementIdsKeysT = keyof typeof employeeDomElementIds
