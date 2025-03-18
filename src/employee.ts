@@ -62,8 +62,11 @@ type employeeDomElementIdsValuesT = typeof employeeDomElementIds[employeeDomElem
 
 const employeeDOM: RecursiveHTMLElement<typeof employeeDomElementIds> = getAllById(employeeDomElementIds)
 
-const personalDataNames = ["name", "surname", "birthDate", "email", "phoneNumber"]
-const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"]
+const personalDataNames = ["name", "surname", "birthDate", "email", "phoneNumber"] as const
+type personalDataNamesValues = typeof personalDataNames[number]
+
+const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", "jobDescription"] as const
+type experienceDataNamesValues = typeof experienceDataNames[number]
 
 const employeeForm = employeeDOM.form
 
