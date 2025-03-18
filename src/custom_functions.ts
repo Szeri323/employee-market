@@ -1,14 +1,18 @@
-const getById = (el: string) => { return document.getElementById(el) }
+const getById = <T extends string>(el: T): HTMLElement | null => { return document.getElementById(el) }
 
-export const getAllById = (obj: HTMLElement | string) => {
-    const results = {}
+export type RecursiveHTMLElement<T> = {
+    [K in keyof T]: T[K] extends string ? HTMLElement | null : RecursiveHTMLElement<T[K]>
+}
+
+export const getAllById = <T extends Record<string, any>>(obj: T): RecursiveHTMLElement<T> => {
+    const results = {} as RecursiveHTMLElement<T>
     Object.keys(obj).forEach((key) => {
-        const element: HTMLElement | string = obj[key]
+        const element = obj[key]
         if (typeof element === "string") {
-            results[key] = getById(element)
+            results[key as keyof T] = getById(element) as RecursiveHTMLElement<T>[keyof T]
         }
-        else {
-            results[key] = getAllById(obj[key])
+        else if (typeof element === "object") {
+            results[key as keyof T] = getAllById(element) as RecursiveHTMLElement<T>[keyof T]
         }
     });
     return results
@@ -50,11 +54,12 @@ export const validatePhoneNumber = (phoneNumber: number) => {
             throw new Error("Numer nie zawiera samych cyfr")
         }
     }
+    return phoneNumber
 }
 
 export const addClick = (el: HTMLElement, func: () => void) => { el.addEventListener("click", func) }
 export const addChange = (el: HTMLElement, func: () => void) => { el.addEventListener("change", func) }
-export const addDblClick = (el: HTMLElement, func: () => void) => { el.addEventListener("dblclick", func) }
+export const addDblClick = (el: HTMLElement, func: (event?: MouseEvent) => void) => { el.addEventListener("dblclick", func) }
 export const addSubmit = (el: HTMLElement, func: () => void) => { el.addEventListener("submit", func) }
 
 export const prepare = (node: HTMLElement | HTMLImageElement | string, options?: {
