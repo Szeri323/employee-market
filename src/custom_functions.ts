@@ -1,12 +1,15 @@
-const getById = (el: string) => document.getElementById(el)
+const getById = <T extends string>(el: T): HTMLElement | null =>
+    document.getElementById(el)
 
-// typ generyczny zwraca obiekt o tej samej strukturze, ale z elementami DOM zamiast stringów
+// Typ generyczny zwracający obiekt o tej samej strukturze, ale z elementami DOM zamiast stringów
 export type RecursiveHTMLElement<T> = {
-    [K in keyof T]: T[K] extends string ? HTMLElement : RecursiveHTMLElement<T[K]>
+    [K in keyof T]: T[K] extends string
+    ? HTMLElement | null
+    : RecursiveHTMLElement<T[K]>
 }
 
-// wszystko w <> przed argumentem funkcji pozwala na wpisanie typu do argumentu (obj: T)
-export const getAllById = <T extends Record<string, any>>(obj: T) => {
+// Funkcja przekształcająca obiekt z ID na obiekt z elementami DOM
+export const getAllById = <T extends Record<string, any>>(obj: T): RecursiveHTMLElement<T> => {
     const results = {} as RecursiveHTMLElement<T>;
 
     Object.keys(obj).forEach((key) => {
