@@ -57,21 +57,37 @@ export const validatePhoneNumber = (phoneNumber: number) => {
     return phoneNumber
 }
 
-export const addClick = (el: HTMLElement, func: () => void) => { el.addEventListener("click", func) }
-export const addChange = (el: HTMLElement, func: () => void) => { el.addEventListener("change", func) }
-export const addDblClick = (el: HTMLElement, func: (event?: MouseEvent) => void) => { el.addEventListener("dblclick", func) }
-export const addSubmit = (el: HTMLElement, func: () => void) => { el.addEventListener("submit", func) }
+export const addClick = (el: HTMLElement | null, func: () => void) => {
+    if (el) {
+        el.addEventListener("click", func)
+    }
+}
+export const addChange = (el: HTMLElement | null, func: () => void) => {
+    if (el) {
+        el.addEventListener("change", func)
+    }
+}
+export const addDblClick = (el: HTMLElement | null, func: (event?: MouseEvent) => void) => {
+    if (el) {
+        el.addEventListener("dblclick", func)
+    }
+}
+export const addSubmit = (el: HTMLElement | null, func: (event: SubmitEvent) => void) => {
+    if (el) {
+        el.addEventListener("submit", func)
+    }
+}
 
 export const prepare = (node: HTMLElement | HTMLImageElement | string, options?: {
     classes?: string[] | string
     src?: string
     href?: string
     text?: string
-    children?: HTMLElement[]
+    children?: HTMLElement[] | HTMLElement
 }) => {
     const el = (typeof node === "string") ? document.createElement(node) : node
 
-    if (Array.isArray(options?.children)) {
+    if (Array.isArray(options?.classes)) {
         const classes = options.classes as string[]
         classes.forEach((className) => {
             el.classList.add(className)
@@ -89,9 +105,17 @@ export const prepare = (node: HTMLElement | HTMLImageElement | string, options?:
     if (options?.text) {
         el.textContent = options.text
     }
-    options?.children?.forEach((child) => {
-        el.appendChild(child)
-    })
+    if (Array.isArray(options?.children)) {
+        options?.children?.forEach((child) => {
+            el.appendChild(child)
+        })
+    }
+    else {
+        const child = options?.children
+        if (child) {
+            el.appendChild(child)
+        }
+    }
 
     return el
 }
