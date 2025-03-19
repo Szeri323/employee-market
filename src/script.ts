@@ -1,6 +1,6 @@
 import { db, auth, google_provider } from "./config";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
-import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee.js"
+import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee"
 // import { getSkillsFromDB } from "./company.js";
 import { addClick, addSubmit } from "./custom_functions.js";
 
