@@ -88,7 +88,7 @@ const addEmployeeToResultsContainer = (employeeAvatar: string, employeeName: str
     const container = companyDOM.results.container
 
     const avatar = prepare("img", {
-        classes: "avatar",
+        classes: ["avatar"],
         src: employeeAvatar
     })
 
@@ -103,19 +103,22 @@ const addEmployeeToResultsContainer = (employeeAvatar: string, employeeName: str
     )
 
     const skills = prepare("div", {
+        classes: ["user-skills"],
         children: skillArray
     })
 
     const data = prepare("div", {
-        classes: "user-data",
+        classes: ["user-data"],
         children: [name, skills]
     })
 
     const employeeBox = prepare("div", {
-        children: [data, avatar]
+        classes: ["user-box"],
+        children: [avatar, data]
     })
     if (container) {
         prepare(container, {
+            classes: ["results"],
             children: employeeBox
         })
     }

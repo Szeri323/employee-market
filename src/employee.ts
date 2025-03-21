@@ -58,7 +58,6 @@ const employeeDomElementIds = {
     links
 } as const
 
-
 const employeeDOM = getAllById(employeeDomElementIds)
 
 const personalDataNames = ["name", "surname", "birthDate", "email", "phoneNumber"] as const
@@ -68,11 +67,7 @@ const experienceDataNames = ["jobTitle", "companyName", "startDate", "endDate", 
 type experienceDataNamesValues = typeof experienceDataNames[number]
 
 const employeeForm = employeeDOM.form
-const employeeAvatar = employeeDOM.avatar
-const employeePersonalData = employeeDOM.personalData
-const employeeExperience = employeeDOM.experience
-const employeeSkills = employeeDOM.skills
-const employeeLinks = employeeDOM.links
+
 
 /* DB operations */
 const addEmployeeDataToDB = async (userId: string) => {
@@ -95,11 +90,11 @@ const addEmployeeDataToDB = async (userId: string) => {
         }
 
         const results: Record<string, any> = {}
-        const personalDataVales = employeeDOM.personalData
+        const personalDataValues = employeeDOM.personalData
 
-        Object.keys(personalDataVales).forEach((key, i) => {
+        Object.keys(personalDataValues).forEach((key, i) => {
             const itemName = personalDataNames[i]
-            const inputEl = personalDataVales[key as keyof typeof personalDataVales]
+            const inputEl = personalDataValues[key as PersonalDataKeysT]
             if (inputEl instanceof HTMLInputElement) {
                 const value: string | number = inputEl.value
                 if (typeof value == "string") {
@@ -159,9 +154,7 @@ const fulfillFormFromDoc = (docSnapData: DocumentData) => {
 const setAvatarFromDocSnapData = (avatar: string) => {
     const label = employeeDOM["avatar"].label
     const imageEl = document.createElement("img")
-
     const imageSource = avatar
-
     imageEl.src = imageSource
     if (label) {
         label.textContent = ""
@@ -173,9 +166,9 @@ const setPersonalDataInputsFromDocSnapData = (personalDataDict: Record<string, a
     const personalDataEl: RecursiveHTMLElement<typeof personalData> = employeeDOM.personalData
     Object.keys(personalDataEl).forEach((key, i) => {
         const itemName = personalDataNames[i]
-        const inputEl = personalDataEl[key as keyof typeof personalDataEl]
+        const inputEl = personalDataEl[key as PersonalDataKeysT]
         if (inputEl instanceof HTMLInputElement) {
-            inputEl.value = personalDataDict[itemName as keyof typeof personalData]
+            inputEl.value = personalDataDict[itemName]
         }
     })
 }
@@ -189,11 +182,10 @@ const setExperienceInputsFromDocSnapData = (experience: Record<string, any>) => 
         for (let i = 1; i < experience.length; i++) {
             addExperienceToExperienceContainer()
         }
-
         for (let i = 0; i < experienceContainer.children.length; i++) {
             experienceDataNames.forEach((e, j) => {
                 const experienceItem = experienceContainer.children[i].children[j]
-                if (experienceItem instanceof HTMLInputElement) {
+                if (experienceItem instanceof HTMLInputElement || experienceItem instanceof HTMLTextAreaElement) {
                     experienceItem.value = experience[i][e]
                 }
             })
@@ -206,7 +198,6 @@ const setSkillFromDocSnapData = (skills: string[]) => {
     if (skillsContainer) {
         for (let el of skills) {
             const skillEl = createEl(el)
-
             skillsContainer.appendChild(skillEl)
         }
     }
@@ -217,7 +208,6 @@ const setLinksFromDocSnapData = (links: string[]) => {
     if (linksContainer) {
         for (let el of links) {
             const linkContainerEl = createContainerEl(el)
-
             linksContainer.appendChild(linkContainerEl)
         }
     }
@@ -241,8 +231,6 @@ const changeLabelAvatar = async () => {
             }
         }
     }
-
-
 }
 
 const addExperienceToExperienceContainer = () => {
@@ -252,12 +240,20 @@ const addExperienceToExperienceContainer = () => {
     experienceBoxEl.classList.add("experience")
 
     experienceDataNames.forEach((name) => {
-        const input = document.createElement("input")
-        input.classList.add("input-field")
-        if (name == "startDate" || name == "endDate") {
-            input.setAttribute("type", "date")
+        if (name == "jobDescription") {
+            const textarea = document.createElement("textarea")
+            textarea.classList.add("input-field")
+            textarea.classList.add("input-field-description")
+            experienceBoxEl.appendChild(textarea)
         }
-        experienceBoxEl.appendChild(input)
+        else {
+            const input = document.createElement("input")
+            input.classList.add("input-field")
+            if (name == "startDate" || name == "endDate") {
+                input.setAttribute("type", "date")
+            }
+            experienceBoxEl.appendChild(input)
+        }
     })
     if (experienceContainer) {
         experienceContainer.appendChild(experienceBoxEl)
@@ -287,7 +283,6 @@ const addElementToContainer = (obj: typeof employeeDOM.skills | typeof employeeD
             clearInputField(input)
         }
     }
-
 }
 
 
@@ -297,17 +292,23 @@ const createArrayFromExperience = () => {
     let newExperienceArray: {}[] = []
 
     for (let experience of experienceArray) {
-        const results: Record<string, any> = {}
+        const results: Record<string, string> = {}
+
         experienceDataNames.forEach((name, i) => {
             const el = experience.children[i]
-            if (el instanceof HTMLInputElement) {
+            if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+                if (el.value == "") {
+                    return
+                }
                 results[name] = name == "startDate" || name == "endDate" ? el.value : clearWhiteSpacesInData(el.value)
             }
         })
         if (results["endDate"] < results["startDate"]) {
             throw new Error("End date is earlier than start date.")
         }
-        newExperienceArray.push(results)
+        if (Object.keys(results).length != 0) {
+            newExperienceArray.push(results)
+        }
     }
     return newExperienceArray
 }

@@ -1,8 +1,8 @@
 import { db, auth, google_provider } from "./config";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
 import { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc } from "./employee"
-// import { getSkillsFromDB } from "./company.js";
-import { addClick, addSubmit } from "./custom_functions.js";
+import { getSkillsFromDB } from "./company";
+import { addClick, addSubmit } from "./custom_functions";
 
 const loggedInUserView = document.getElementById("logged-in-user-view")
 const loggedInCompanyView = document.getElementById("logged-in-company-view")

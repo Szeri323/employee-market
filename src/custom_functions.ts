@@ -79,7 +79,7 @@ export const addSubmit = (el: HTMLElement | null, func: (event: SubmitEvent) => 
 }
 
 export const prepare = (node: HTMLElement | HTMLImageElement | string, options?: {
-    classes?: string[] | string
+    classes?: string[]
     src?: string
     href?: string
     text?: string
@@ -87,14 +87,11 @@ export const prepare = (node: HTMLElement | HTMLImageElement | string, options?:
 }) => {
     const el = (typeof node === "string") ? document.createElement(node) : node
 
-    if (Array.isArray(options?.classes)) {
+    if (options?.classes) {
         const classes = options.classes as string[]
         classes.forEach((className) => {
             el.classList.add(className)
         })
-    }
-    else {
-        el.classList.add(options?.classes as string)
     }
     if (el instanceof HTMLImageElement && options?.src) {
         el.src = options.src
