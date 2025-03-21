@@ -50,8 +50,8 @@ export const validatePhoneNumber = (phoneNumber: string) => {
     if (phoneNumber.length != 9) {
         throw new Error("Długość numeru nie jest równa 9")
     }
-    for (let el of phoneNumber) {
-        if (!(el >= "0" && el <= "9")) {
+    for (let digit of phoneNumber) {
+        if (!(digit >= "0" && digit <= "9")) {
             throw new Error("Numer nie zawiera samych cyfr")
         }
     }
