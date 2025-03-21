@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore"
+
 const getById = <T extends string>(el: T): HTMLElement | null => { return document.getElementById(el) }
 
 export type RecursiveHTMLElement<T> = {
@@ -44,17 +46,21 @@ export const validateEmail = (email: string) => {
     return email
 }
 
-export const validatePhoneNumber = (phoneNumber: number) => {
-    const s = phoneNumber.toString()
-    if (s.length != 9) {
+export const validatePhoneNumber = (phoneNumber: string) => {
+    if (phoneNumber.length != 9) {
         throw new Error("Długość numeru nie jest równa 9")
     }
-    for (let el of s) {
+    for (let el of phoneNumber) {
         if (!(el >= "0" && el <= "9")) {
             throw new Error("Numer nie zawiera samych cyfr")
         }
     }
-    return phoneNumber
+    return Number(phoneNumber)
+}
+
+export const createDateFromTimestampSeconds = (seconds: number) => {
+    const d = new Date(seconds * 1000)
+    return d.toISOString().split("T")[0]
 }
 
 export const addClick = (el: HTMLElement | null, func: () => void) => {
