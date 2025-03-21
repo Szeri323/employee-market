@@ -1,6 +1,6 @@
 export { addEmployeeDataToDB, employeeForm, fulfillFormFromDoc }
 import { DocumentData } from "firebase/firestore"
-import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, validatePhoneNumber, getAllById, addChange, addClick, addDblClick, RecursiveHTMLElement } from "./custom_functions"
+import { clearInputField, clearWhiteSpacesInData, validateData, validateEmail, validatePhoneNumber, getAllById, addChange, addClick, addDblClick, RecursiveHTMLElement, createDateFromTimestampSeconds } from "./custom_functions"
 
 
 const avatar = {
@@ -96,26 +96,22 @@ const addEmployeeDataToDB = async (userId: string) => {
             const itemName = personalDataNames[i]
             const inputEl = personalDataValues[key as PersonalDataKeysT]
             if (inputEl instanceof HTMLInputElement) {
-                const value: string | number = inputEl.value
+                const value = inputEl.value
                 if (typeof value == "string") {
                     if (itemName == "email") {
                         results[itemName] = validateEmail(value)
                     }
                     else if (itemName == "birthDate") {
-                        results[itemName] = value
+                        results[itemName] = new Date(value)
+                    }
+                    else if (itemName == "phoneNumber") {
+                        results[itemName] = validatePhoneNumber(value)
                     }
                     else {
                         results[itemName] = clearWhiteSpacesInData(value)
                     }
                 }
-                else {
-                    if (itemName == "phoneNumber") {
-                        results[itemName] = validatePhoneNumber(value)
-                    }
-                }
-
             }
-
         })
 
         const experienceArray = createArrayFromExperience()
@@ -168,7 +164,13 @@ const setPersonalDataInputsFromDocSnapData = (personalDataDict: Record<string, a
         const itemName = personalDataNames[i]
         const inputEl = personalDataEl[key as PersonalDataKeysT]
         if (inputEl instanceof HTMLInputElement) {
-            inputEl.value = personalDataDict[itemName]
+            if (personalDataNames[i] == "birthDate") {
+                const formattedDate = createDateFromTimestampSeconds(personalDataDict[itemName].seconds)
+                inputEl.value = formattedDate
+            }
+            else {
+                inputEl.value = personalDataDict[itemName]
+            }
         }
     })
 }
@@ -186,7 +188,12 @@ const setExperienceInputsFromDocSnapData = (experience: Record<string, any>) => 
             experienceDataNames.forEach((e, j) => {
                 const experienceItem = experienceContainer.children[i].children[j]
                 if (experienceItem instanceof HTMLInputElement || experienceItem instanceof HTMLTextAreaElement) {
-                    experienceItem.value = experience[i][e]
+                    if (e == "startDate" || e == "endDate") {
+                        experienceItem.value = createDateFromTimestampSeconds(experience[i][e].seconds)
+                    }
+                    else {
+                        experienceItem.value = experience[i][e]
+                    }
                 }
             })
         }
@@ -292,7 +299,7 @@ const createArrayFromExperience = () => {
     let newExperienceArray: {}[] = []
 
     for (let experience of experienceArray) {
-        const results: Record<string, string> = {}
+        const results: Record<string, any> = {}
 
         experienceDataNames.forEach((name, i) => {
             const el = experience.children[i]
@@ -300,11 +307,11 @@ const createArrayFromExperience = () => {
                 if (el.value == "") {
                     return
                 }
-                results[name] = name == "startDate" || name == "endDate" ? el.value : clearWhiteSpacesInData(el.value)
+                results[name] = name == "startDate" || name == "endDate" ? new Date(el.value) : clearWhiteSpacesInData(el.value)
             }
         })
         if (results["endDate"] < results["startDate"]) {
-            throw new Error("End date is earlier than start date.")
+            throw new Error("Data zakończenia jest wcześniejsza od daty rozpoczęcia.")
         }
         if (Object.keys(results).length != 0) {
             newExperienceArray.push(results)
